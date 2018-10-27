@@ -25,11 +25,13 @@ xstr = ""
 # The production code will put it somwhere else
 dataroot = os.getcwd()
 
-data_dir        = dataroot + "/../data/customers/"
-key_dir         = dataroot + "/../data/customers/keys/"
-currency_dir    = dataroot + "/../data/currency/"
-blockchain_dir  = dataroot + "/../data/blockchain/"
-audit_dir       = dataroot + "/../data/audit/"
+print "datatroot", dataroot
+
+data_dir        = dataroot + "/data/customers/"
+key_dir         = dataroot + "/data/customers/keys/"
+#currency_dir    = dataroot + "/data/currency/"
+blockchain_dir  = dataroot + "/data/blockchain/"
+audit_dir       = dataroot + "/data/audit/"
 
 def showgtk():
     pprint(Gtk.__dict__)
@@ -62,14 +64,6 @@ class MainWin():
          
         window.set_events(Gdk.EventMask.ALL_EVENTS_MASK )
 
-        '''window.set_events(  Gdk.EventMask.POINTER_MOTION_MASK |
-                            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
-                            Gdk.EventMask.BUTTON_PRESS_MASK |
-                            Gdk.EventMask.BUTTON_RELEASE_MASK |
-                            Gdk.EventMask.KEY_PRESS_MASK |
-                            Gdk.EventMask.KEY_RELEASE_MASK |
-                            Gdk.EventMask.FOCUS_CHANGE_MASK )'''
-         
         window.connect("unmap", self.OnExit)
         window.connect("key-press-event", self.key_press_event)        
         window.connect("button-press-event", self.area_button)        
@@ -308,7 +302,7 @@ class MainWin():
                 self.arr2[aa[0]] = aa[1].get_text()
             elif type(aa[1])  == Gtk.TextView:
                 buff = aa[1].get_buffer()
-                txtx = buff.get_text(buff.get_start_iter(), buff.get_end_iter()) 
+                txtx = buff.get_text(buff.get_start_iter(), buff.get_end_iter(), False) 
                 #print "textview", aa[0], txtx
                 self.arr2[aa[0]] = txtx
             else:
@@ -446,7 +440,7 @@ def help():
 def softmkdir(dirx):
     try:
         if not os.path.isdir(dirx):
-            os.mkdir(dirx)
+            os.makedirs(dirx)
     except:
         print "Cannot make directory:",  dirx
         raise
@@ -467,7 +461,7 @@ if __name__ == '__main__':
     try:
         softmkdir(data_dir)
         softmkdir(key_dir)
-        softmkdir(currency_dir)
+        #softmkdir(currency_dir)
         softmkdir(blockchain_dir)
         softmkdir(audit_dir)
     except: 
@@ -543,6 +537,8 @@ if __name__ == '__main__':
     mainwin = MainWin()
     mainwin.window.show_all()    
     Gtk.main()
+
+
 
 
 

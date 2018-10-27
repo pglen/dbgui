@@ -35,8 +35,8 @@ class NewCust(Gtk.Window):
         #window.set_icon(ic.get_pixbuf())
         #www = Gdk.Screen.width(); hhh = Gdk.Screen.height();
         
-        #www, hhh = sutil.get_screen_wh()
-        www, hhh = 1024, 768
+        www, hhh = sutil.get_screen_wh()
+        #www, hhh = 1024, 768
         
         self.set_default_size(3*www/4, 3*hhh/4)
         
@@ -143,12 +143,12 @@ class NewCust(Gtk.Window):
         lab2 = Gtk.Label(label="     ")
         hbox.pack_start(lab2, False, 0, 0)
         
-        butt1 = Gtk.Button("     _OK      ")
+        butt1 = Gtk.Button.new_with_mnemonic("     _OK      ")
         butt1.connect("clicked", self.click_ok, self)
         hbox.pack_start(butt1, False, 0, 0)
         self.spacer(hbox)
         
-        butt2 = Gtk.Button("    _Cancel    ")
+        butt2 = Gtk.Button.new_with_mnemonic("    _Cancel    ")
         butt2.connect("clicked", self.click_can, self)
         hbox.pack_start(butt2, False, 0, 0)
         self.spacer(hbox)
@@ -165,11 +165,12 @@ class NewCust(Gtk.Window):
             ev = Gdk.event_peek()
             #print ev
             if ev:
-                if ev.type == Gdk.DELETE:
+                if ev.type == Gdk.EventType.DELETE:
                     break
-                if ev.type == Gdk.UNMAP:
+                if ev.type == Gdk.EventType.UNMAP:
                     break
-            Gtk.main_iteration_do()
+            if Gtk.main_iteration_do(False):
+                break
             
         return self.ok
         
@@ -327,6 +328,7 @@ class NewCust(Gtk.Window):
     wid.modify_bg(Gtk.StateType.SELECTED, col)
     #hbox2.pack_start(wid, False)'''
     
+
 
 
 

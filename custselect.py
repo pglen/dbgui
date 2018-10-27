@@ -1,18 +1,13 @@
 #!/usr/bin/env python
 
-'''Tree View/List Store
+# Tree View/List Store
 
 import os, sys, getopt, signal, uuid, subprocess
-#import gobject, gtk, pango, 
 
-import random, time
 import newcust, pysql, sutil, treehand, yellow
 import custselect
 
-import os, sys, getopt, signal
-import sutil
-
-The GtkListStore is used to store data in list form, to be used
+'''The GtkListStore is used to store data in list form, to be used
 later on by a GtkTreeView to display it. This demo builds a
 simple GtkListStore and displays it. See the Stock Browser
 demo for a more advanced example.'''
@@ -68,11 +63,11 @@ class ListCust(Gtk.Window):
         self.ok = False
         
         #self.set_border_width(8)
-        #www, hhh = sutil.get_screen_wh()
-        www, hhh = 1024, 768
+        www, hhh = sutil.get_screen_wh()
+        #www, hhh = 1024, 768
         
-        
-        self.set_default_size(2*www/4, 2*hhh/4)
+        #self.set_default_size(2*www/4, 2*hhh/4)
+        self.set_size_request(3*www/4, 3*hhh/4)
         #self.set_default_size(400, 300)
 
         vbox = Gtk.VBox(False, 8)
@@ -81,8 +76,8 @@ class ListCust(Gtk.Window):
         #self.add_content_widget(vbox, 1)
         self.add(vbox)
 
-        label = Gtk.Label(label='Select DIBA Customer')
-        vbox.pack_start(label, False, False, 0)
+        #label = Gtk.Label(label='Select Client')
+        #vbox.pack_start(label, False, False, 0)
 
         self.connect("key-press-event", self.key_press_event)        
         
@@ -90,10 +85,22 @@ class ListCust(Gtk.Window):
         vbox.pack_start(hbox, False, 0, 0)
         hbox.pack_start(Gtk.Label("    "), True, True, 0)
         
-        for aa in range(ord("Z") - ord("A") + 1):
-            sss =  str(chr(ord("A") + aa) )
-            hbox.pack_start(Gtk.Button(sss), True, 0, 0)
+        for aa in range(ord("N") - ord("A") + 1):
+            sss =  str(chr(ord("A") + aa ))
+            bbb = Gtk.Button(sss)
+            hbox.pack_start(bbb, False, 0, 0)
         hbox.pack_start(Gtk.Label("    "), True, True, 0)
+        
+        hbox2 = Gtk.HBox()
+        vbox.pack_start(hbox2, False, 0, 0)
+        hbox2.pack_start(Gtk.Label("    "), True, True, 0)
+        
+        for aa in range(ord("Z") - ord("O") + 1):
+            sss =  str(chr(ord("O") + aa ) )
+            bbb = Gtk.Button(sss)
+            hbox2.pack_start(bbb, False, 0, 0)
+        hbox2.pack_start(Gtk.Label("    "), True, True, 0)
+        
         
         sw = Gtk.ScrolledWindow()
         sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
@@ -190,12 +197,13 @@ class ListCust(Gtk.Window):
             ev = Gdk.event_peek()
             #print ev
             if ev:
-                if ev.type == Gdk.DELETE:
+                if ev.type == Gdk.EventType.DELETE:
                     break
-                if ev.type == Gdk.UNMAP:
+                if ev.type == Gdk.EventType.UNMAP:
                     break
-            Gtk.main_iteration_do()
-        self.destroy()
+            if Gtk.main_iteration_do(False):
+                break
+            
         return self.ok
     
 def main():
@@ -204,6 +212,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
 
 
 
