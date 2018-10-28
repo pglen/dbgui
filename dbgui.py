@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os, sys, getopt, signal, uuid, subprocess
-#import gobject, gtk, pango, 
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -12,12 +11,10 @@ from gi.repository import GLib
 from gi.repository import Pango
 
 import random, time
-import newcust, pysql, sutil, treehand, yellow
-import custselect
+import newcust, pysql, sutil, treehand, yellow, custselect
 
 version = 1.0
 verbose = False
-xstr = ""
 
 # Where things are stored (backups, orgs, macros)
 #data_dir = os.path.expanduser("~/.dbgui")
@@ -25,7 +22,7 @@ xstr = ""
 # The production code will put it somwhere else
 dataroot = os.getcwd()
 
-print "datatroot", dataroot
+#print "datatroot", dataroot
 
 data_dir        = dataroot + "/data/customers/"
 key_dir         = dataroot + "/data/customers/keys/"
@@ -47,7 +44,7 @@ class MainWin():
     def __init__(self):
     
         self.timerx = 0
-        
+        self.serial = ""
         self.window = window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
         window.set_title("DBGui Main Screen")
         window.set_position(Gtk.WindowPosition.CENTER)
@@ -56,12 +53,7 @@ class MainWin():
         #window.set_hands(ic.get_pixbuf())
         
         www, hhh = sutil.get_screen_wh()
-        #print "www", www, "hhh", hhh
-        #print "xx / yy", sutil.get_screen_xy()
-            
         window.set_default_size(13*www/16, 13*hhh/16)
-        #window.set_flags(Gtk.CAN_FOCUS | Gtk.SENSITIVE)
-         
         window.set_events(Gdk.EventMask.ALL_EVENTS_MASK )
 
         window.connect("unmap", self.OnExit)
@@ -96,11 +88,12 @@ class MainWin():
         hbox2.pack_start(self.txt1, True, True, 0)
         
         vbox.pack_start(hbox2, True, True, 0)
-        
-        #lab1 = Gtk.Label(label="");  hbox.pack_start(lab1, True, True, 0)
         lab2 = Gtk.Label(label="");  hbox.pack_start(lab2, True, 0, 0)
         
         ib2 = self.imgbutt("images/person.png", " _New Client ", self.new_account, window)
+        hbox.pack_start(ib2, False, 0, 0)
+        
+        ib2 = self.imgbutt("images/select.png", " _Edit Client ", self.ed_account, window)
         hbox.pack_start(ib2, False, 0, 0)
         
         ib2 = self.imgbutt("images/select.png", " Selec_t Client ", self.sel_account, window)
@@ -109,7 +102,7 @@ class MainWin():
         ib2 = self.imgbutt("images/search.png", " _Search ", self.search, window)
         hbox.pack_start(ib2, False, 0, 0)
         
-        ib2 = self.imgbutt("images/transact.png", " _Show Transactions ", self.transact, window)
+        ib2 = self.imgbutt("images/transact.png", " Sho_w Transactions ", self.transact, window)
         hbox.pack_start(ib2, False, 0, 0)
         
         ib2 = self.imgbutt("images/summary.png", " Show Summary ", self.show_one, window)
@@ -171,6 +164,7 @@ class MainWin():
         ic2 = Gtk.Image.new_from_pixbuf(pb2)
         butt1d = Gtk.Button.new_with_mnemonic(txt)
         butt1d.connect("clicked", func, win)
+        
         vbb.pack_start(Gtk.Label(" "), True, True, 0)
         vbb.pack_start(ic2, False, 0, 0)
         vbb.pack_start(Gtk.Label(" "), True, True, 0)
@@ -224,47 +218,17 @@ class MainWin():
         dibadb.put(head, text)
         dibadb.putshow(head, 1)        
         
-        found = False 
-        '''for aa in yellow.slist.data:
-            if aa.head == xstr:
-                found = True 
-                print "update", head, text
-                aa.head = head
-                aa.text = text
-                aa.window.head = head
-                aa.window.text = text
-                
-                aa.invalidate()
-                yellow.usleep(1)
-                aa.window.show()'''
-                
-        if not found:
-            '''print "creating", head
-            cc = yellow.stickWin(window2, head, text)
-            pp = dibadb.getpos(head)        
-            if pp:
-                cc.window.xx = pp[0]; cc.window.yy = pp[1]   
-            aa.window.move(aa.window.xx, aa.window.yy)'''
-            pass
-            
         self.window.present()
         
     def sel_account(self, area, me):
-        print "sel_account"
-        res = []
-        try:
-            res = dibadb.getcustnames()
-            print "Showing database info:"
-            for aa in res:
-                print aa
-        except:
-            self.progress("Cannot fetch name list.")
-            print "Cannot fetch name list.", sys.exc_info()
-            pass
-            
-        selx = custselect.ListCust(self.window, res)
+        #print "sel_account"
+        selx = custselect.ListCust(self, dibadb)
         selx.run()
-        print "done list"
+        if selx.results:
+            print selx.results
+            self.account.set_text("Current Client: " + selx.results[1])
+            self.serial = selx.results[2]
+        #print "done list"
         
     def progress(self, text):
         self.activity.set_text(text)
@@ -272,19 +236,7 @@ class MainWin():
         self.timerx = 5;
         
     def getkeyid(self, fname):
-        strx = ""
-        arr = ["..\\transport\dibakeyinfo.exe", fname]
-        #print arr
-        try:
-            p3 = subprocess.Popen(arr, stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
-            output = p3.communicate()
-            #print "My out", output, p3.returncode
-            strx = output[0]
-            if p3.returncode:
-                print "getkey ID failed", output
-        except:
-            sutil.print_exception("keygen")
-        return strx
+        return ""
     
     def unlink_noerr(self, fname):
         try:           
@@ -311,75 +263,38 @@ class MainWin():
         if self.arr2['cname'] == "":            
             return "Name cannot be empty."
             
-        isaddr =  self.arr2['addr1'] != "" and  self.arr2['city'] != "" and \
-                     self.arr2['county'] != "" and self.arr2['country'] != ""
+        isaddr =  self.arr2['addr1'] != "" and  self.arr2['city'] != "" 
+                     #and \
+                     #self.arr2['county'] != "" and self.arr2['country'] != ""
         
         if self.arr2['phone'] == "" and self.arr2['email'] == "" and \
-            not isaddr:
+                                not isaddr:
             return "Must have phone or address or email."
             
         dibadb.put(self.arr2)
         
         return ""
         
+    def ed_account(self, area, me):
+        #print "ed_account" 
+        if self.serial == "":
+            sutil.message("\nPlease select a client first.\n", self.window)
+            return
+        datax  = dibadb.get(self.serial)
+        #print "ed datax", datax
+        custform = newcust.NewCust(self, self.serial, datax)
+        custform.run()
+        
     def new_account(self, area, me):
         #print "new_account" 
         serial = uuid.uuid4()
-        fname = key_dir + str(serial)
-        #fname = sutil.tmpname(data_dir, "cust_key")
-        self.progress("Started account generation: " + os.path.basename(fname))
-        custform = newcust.NewCust(self.window, self.callback, serial)
-        retx = custform.run()
-        #custform.destroy()
-        #print "after custrun"
-        if retx == False:
+        custform = newcust.NewCust(self, serial)
+        custform.run()
+        if custform.ok == False:
             self.progress("Cancelled account generation. ")
             return
-        
-        if fname == "":
-            self.progress("Cannot create temporary key file.")
-            return 
-        
         ret = ""; retcode = 0
-        self.unlink_noerr(fname + ".key");  
-        self.unlink_noerr(fname + ".pub");
-        self.unlink_noerr(fname + ".err");
-    
-        arr = ["bash", "start", "rxvt -e", 
-                         "..\\transport\dibakeygen.exe", "-f", "-w", 
-                            "-e", fname + ".err", fname]
-        try:
-            p2 = subprocess.Popen(arr, stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
-            output = p2.communicate()
-            '''if p2.returncode:
-                print "failed", output'''
-        except:
-            print "Cannot exceute keygen"
-            sutil.print_exception("keygen")
-            self.progress("Cannot execute keygen.")
         
-        if os.access(fname + ".key", os.R_OK):
-            strx = self.getkeyid(fname + ".pub")
-            idx = strx.find("'") + 1
-            if idx > 1: 
-                idx2 = strx.find("'", idx)
-                if idx2:
-                    strx = strx[idx:idx2]
-            self.progress("Key generated. ID = '" + strx + "'")
-            self.account.set_text("DIBA Customer: " + self.arr2['cname']);
-        
-            #sutil.message("New Key Generated.\n\n", self.window)
-        else:
-            self.progress("Keygen Failed")
-            strx = ""
-            try:
-                strx = open(fname + ".err").read()
-            except:
-                pass
-            sutil.message("New Key Generation failed.\n\n" + strx, self.window)
-            
-        self.unlink_noerr(fname + ".err");
-
     def search(self, area, me):
         print "search"
     
@@ -414,9 +329,7 @@ class MainWin():
             self.timerx -= 1
         if self.timerx == 1:
             self.activity.set_text("DBGui Idle")
-        
         GObject.timeout_add(1000, self.handler_tick)
-    
                                               
 def key_press_event(win, aa):
     print "key_press_event", win, aa
@@ -533,10 +446,14 @@ if __name__ == '__main__':
         
     #if(show_config):
     #    print dibadb.getall()
-        
+
+    sys.stdout = sutil.Unbuffered(sys.stdout)
+    sys.stderr = sutil.Unbuffered(sys.stderr)
+            
     mainwin = MainWin()
     mainwin.window.show_all()    
     Gtk.main()
+
 
 
 

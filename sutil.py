@@ -74,7 +74,7 @@ def message(strx, parent = None, title = None, icon = Gtk.MessageType.INFO):
     if title:
         dialog.set_title(title)
     else:
-        dialog.set_title("Digibank Message")
+        dialog.set_title("DBGui Message")
 
     # Close dialog on user response
     dialog.connect("response", lambda d, r: d.destroy())
@@ -113,6 +113,35 @@ def tmpname(indir, template):
             break
     return fname
 
+# ------------------------------------------------------------------------
+# Execute man loop
+
+def mainloop():
+    while True:
+        ev = Gdk.event_peek()
+        #print ev
+        if ev:
+            if ev.type == Gdk.EventType.DELETE:
+                break
+            if ev.type == Gdk.EventType.UNMAP:
+                break
+        if Gtk.main_iteration_do(True):
+            break
+    
+class Unbuffered(object):
+   def __init__(self, stream):
+       self.stream = stream
+       
+   def write(self, data):
+       self.stream.write(data)
+       self.stream.flush()
+       
+   def writelines(self, datas):
+       self.stream.writelines(datas)
+       self.stream.flush()
+       
+   def __getattr__(self, attr):
+       return getattr(self.stream, attr)
 
 
 

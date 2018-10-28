@@ -80,14 +80,36 @@ class dibasql():
     # --------------------------------------------------------------------        
     # Return False if cannot put data
     
+    def   get(self, serial):
+        #print "serial", serial
+        ret = True; cnt = 0
+        ddd = {}  
+        try:      
+            self.c.execute("select * from clients where custid == ?", (serial,))
+            rr = self.c.fetchone()
+            if rr == []:
+                print "not found"
+                return ddd
+            else:
+                
+                for aa in self.c.description:
+                    #print aa[0],
+                    ddd[aa[0]] = rr[cnt]
+                    cnt = cnt + 1
+                return ddd
+        except:
+            print "Cannot get sql data", sys.exc_info()             
+         
+    # --------------------------------------------------------------------        
+    # Return False if cannot put data
+    
     def   put(self, datax):
     
         #got_clock = time.clock()         
-        
-        print "datax", datax
+        #print "datax", datax
         ret = True  
         try:      
-            self.c.execute("select * from clients where cname == ?", (datax['cname'], ))
+            self.c.execute("select * from clients where custid == ?", (datax['custid'], ))
             rr = self.c.fetchall()
             if rr == []:
                 entryid = uuid.uuid4()
@@ -104,22 +126,22 @@ class dibasql():
                 
                 arr = []
                 arr.append(str(entryid))
-                
                 for aa in datax:
                      strx = datax[aa]
                      arr.append(strx)
                 
-                print "sql str", sqlstr, "arr", arr
+                #print "sql str", sqlstr, "arr", arr
                 self.c.execute(sqlstr, arr)
-                
-                #self.c.execute("insert into clients (head, body) \
-                #    values (?, ?)", (head, val))
-                pass
             else:
                 #print "updating"
-                #self.c.execute("update clients set body = ? where head = ?",\
-                #                     (val, head))                                     
-                pass
+                sqlstr = "update clients set "
+                for aa in datax:
+                     sqlstr += aa + " = '" + datax[aa] + "', "
+                sqlstr = sqlstr[:-2]  
+                sqlstr += " where custid = '" + datax['custid'] + "'" 
+                #print "sql str:", sqlstr
+                self.c.execute(sqlstr)
+                
             self.conn.commit()          
         except:
             print "Cannot put sql data", sys.exc_info()             
@@ -212,6 +234,7 @@ class dibasql():
             return rr
         else:
             return None
+
 
 
 

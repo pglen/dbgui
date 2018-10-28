@@ -15,19 +15,21 @@ import treehand, sutil, padding
 
 class NewCust(Gtk.Window):
     
-    def __init__(self, par, cback, uuid_name, datax = None):
+    def __init__(self, self2, uuid_name, datax = None):
     
-        self.cback = cback
+        self.datax = datax
+        self.self2 = self2
+        self.cback = self2.callback
         self.ok = False
         self.arr = []
         GObject.GObject.__init__(self)
-        self.set_transient_for(par)
+        self.set_transient_for(self2.window)
         self.set_modal(True)
         
         if datax  == None:
-            self.set_title("Create new DIBA customer.")
+            self.set_title("Create new client.")
         else:
-            self.set_title("Edit DIBA customer.")
+            self.set_title("Edit client.")
             
         self.set_position(Gtk.WindowPosition.CENTER)
         
@@ -42,14 +44,16 @@ class NewCust(Gtk.Window):
         
         #self.set_flags(Gtk.CAN_FOCUS | Gtk.SENSITIVE)
          
-        self.set_events(  Gdk.EventMask.POINTER_MOTION_MASK |
+        '''self.set_events(  Gdk.EventMask.POINTER_MOTION_MASK |
                             Gdk.EventMask.POINTER_MOTION_HINT_MASK |
                             Gdk.EventMask.BUTTON_PRESS_MASK |
                             Gdk.EventMask.BUTTON_RELEASE_MASK |
                             Gdk.EventMask.KEY_PRESS_MASK |
                             Gdk.EventMask.KEY_RELEASE_MASK |
-                            Gdk.EventMask.FOCUS_CHANGE_MASK )
+                            Gdk.EventMask.FOCUS_CHANGE_MASK )'''
          
+        self.set_events(Gdk.EventMask.ALL_EVENTS_MASK )
+
         self.connect("key-press-event", self.key_press_event)        
         self.connect("button-press-event", self.area_button)        
         
@@ -64,44 +68,45 @@ class NewCust(Gtk.Window):
         #GObject.timeout_add(1000, self.handler_tick)
         
         vbox = Gtk.VBox()
-        vbox2 = Gtk.VBox();
+        vbox2 = Gtk.VBox(False, 4);
       
         sg = Gtk.SizeGroup(Gtk.SizeGroupMode.HORIZONTAL)
           
-        tp1 =("Full Name: ", "cname", "Enter full name (TAB to advance)", None)
-        tp2 = ("Date of birth: ", "dob", "Date of birth, YYYY/MM/DD", None) 
+        tp1 =("Full Name: ", "cname", "Enter full name (TAB to advance)", datax)
+        tp2 = ("Date of birth: ", "dob", "Date of birth, YYYY/MM/DD", datax) 
         lab1, lab2 = self.entryquad(vbox2, tp1, tp2)
         sg.add_widget(lab1);     sg.add_widget(lab2)
         
-        tp3 = ("Location of birth: ", "lob", "Location, City and Country", None) 
-        tp4 = ("Numeric ID: ", "numid", "Social Security Number or national ID", None) 
+        tp3 = ("Location of birth: ", "lob", "Location, City and Country", datax) 
+        tp4 = ("Numeric ID: ", "numid", "Social Security Number or national ID", datax) 
         lab3, lab4 = self.entryquad(vbox2, tp3, tp4)
         sg.add_widget(lab3);     sg.add_widget(lab4)
         
-        tp3a = ("Address Line 1: ", "addr1", "Address line one. (Number, Street)", None) 
-        tp4a = ("Address Line 2: ", "addr2", "Addressline two. (if applicable)", None) 
+        tp3a = ("Address Line 1: ", "addr1", "Address line one. (Number, Street)", datax) 
+        tp4a = ("Address Line 2: ", "addr2", "Addressline two. (if applicable)", datax) 
         lab5, lab6 = self.entryquad(vbox2, tp3a, tp4a)
         sg.add_widget(lab5);     sg.add_widget(lab6)
         
-        tp5 = ("City: ", "city", "City or Township", None) 
-        tp6 = ("County / Territory: ", "county", "County or Teritory or Borough", None) 
+        tp5 = ("City: ", "city", "City or Township", datax) 
+        tp6 = ("County / Territory: ", "county", "County or Teritory or Borough", datax) 
         lab7, lab8 = self.entryquad(vbox2, tp5, tp6)
         sg.add_widget(lab7);     sg.add_widget(lab8)
         
-        tp7 = ("Zip: ", "zip", "Zip code or Postal code", None) 
-        tp8 = ("Country: ", "country", "Coutry of residence", None) 
+        tp7 = ("Zip: ", "zip", "Zip code or Postal code", datax) 
+        tp8 = ("Country: ", "country", "Coutry of residence", datax) 
         lab9, lab10 = self.entryquad(vbox2, tp7, tp8)
         sg.add_widget(lab9);     sg.add_widget(lab10)
         
-        tp7a = ("Phone: ", "phone", "Phone or text number. ", None) 
-        tp8a = ("Email: ", "email", "Primary Email", None) 
+        tp7a = ("Phone: ", "phone", "Phone or text number. ", datax) 
+        tp8a = ("Email: ", "email", "Primary Email", datax) 
         lab9a, lab10a = self.entryquad(vbox2, tp7a, tp8a)
         sg.add_widget(lab9a);     sg.add_widget(lab10a)
         
-        tp7b = ("Phone: (secondary)", "phone2", "Secondary phone or text number. ", None) 
-        tp8b = ("Email: (Secondary)", "email2", "Secondary Email", None) 
+        tp7b = ("Phone: (secondary)", "phone2", "Secondary phone or text number. ", datax) 
+        tp8b = ("Email: (Secondary)", "email2", "Secondary Email", datax) 
         lab9b, lab10b = self.entryquad(vbox2, tp7b, tp8b)
         sg.add_widget(lab9b);     sg.add_widget(lab10b)
+        
         
         self.vspacer(vbox)
         vbox.pack_start(vbox2, False, 0, 0)
@@ -110,15 +115,15 @@ class NewCust(Gtk.Window):
         
         lab1a = self.textviewpair(vbox3, "Comments: ", "comments", \
                 "Enter comments. This field could contain additiona data. "
-                "   (Ctrl-TAB to advance)")
+                "   (Ctrl-TAB to advance)", datax)
         sg.add_widget(lab1a)
         
         lab5 = self.textviewpair(vbox3, "Free Text: ", "freetext", \
-                "Enter free flowing text, relevant to the entry.")
+                "Enter free flowing text, relevant to the entry.", datax)
         sg.add_widget(lab5)
         
         lab2a = self.textviewpair(vbox3, "Log entry:", "log", \
-                "Enter log entry. (Append at end, keep old entries.)")
+                "Enter log entry. (Append at end, keep old entries.)", datax)
         sg.add_widget(lab2a)
         
         vbox.pack_start(vbox3, False, 0, 0)
@@ -161,17 +166,7 @@ class NewCust(Gtk.Window):
     # Run as modal dialog until destroyed
     def run(self):
         self.show_all()
-        while True:
-            ev = Gdk.event_peek()
-            #print ev
-            if ev:
-                if ev.type == Gdk.EventType.DELETE:
-                    break
-                if ev.type == Gdk.EventType.UNMAP:
-                    break
-            if Gtk.main_iteration_do(False):
-                break
-            
+        sutil.mainloop()
         return self.ok
         
     # --------------------------------------------------------------------
@@ -190,7 +185,7 @@ class NewCust(Gtk.Window):
             self.ok = True
             self.destroy()
         else:
-            sutil.message("Operator entry incomplete.\n\n" + err, self)
+            sutil.message("\nOperator entry incomplete.\n\n" + err, self)
         pass
         
     def click_can(self, butt, xx):
@@ -204,7 +199,7 @@ class NewCust(Gtk.Window):
         if event.keyval == Gdk.KEY_x and event.get_state() & Gdk.ModifierType.MOD1_MASK:
             self.destroy()
     
-    def  area_button(self, butt):
+    def  area_button(self, butt, arg):
         pass
     
     def scrolledtext(self, name, body = None):
@@ -212,9 +207,9 @@ class NewCust(Gtk.Window):
         textx.set_border_width(4)
         self.arr.append((name, textx))
         if body != None: 
-            self.text.grab_focus()
+            #textx.grab_focus()
             buff = Gtk.TextBuffer(); buff.set_text(body)
-            self.text.set_buffer(buff)
+            textx.set_buffer(buff)
 
         sw = Gtk.ScrolledWindow()
         sw.add(textx)
@@ -227,7 +222,7 @@ class NewCust(Gtk.Window):
     
     def entryquad(self, vbox, entry1, entry2):
     
-        hbox2 = Gtk.HBox()
+        hbox2 = Gtk.HBox(False, 2)
         
         lab1a = Gtk.Label(label="      ")
         hbox2.pack_start(lab1a, False, 0, 0)
@@ -236,9 +231,9 @@ class NewCust(Gtk.Window):
         hbox2.pack_start(lab1, False, 0, 0)
         lab1a = Gtk.Label(label="      ")
         hbox2.pack_start(lab1a, False, 0, 0)
-        headx = Gtk.Entry();
+        headx = Gtk.Entry();  headx.set_width_chars(33)
         if entry1[3] != None: 
-            headx.set_text(entry1[3])
+            headx.set_text(entry1[3][entry1[1]])
         hbox2.pack_start(headx, True, 0, 0)
         lab3 = Gtk.Label(label="        ")
         hbox2.pack_start(lab3, False, 0, 0)
@@ -251,14 +246,15 @@ class NewCust(Gtk.Window):
         hbox2.pack_start(lab2, False, 0, 0)
         lab1b = Gtk.Label(label="      ")
         hbox2.pack_start(lab1b, False, 0, 0)
-        headx2 = Gtk.Entry();
+        headx2 = Gtk.Entry();  headx2.set_width_chars(33)
         if entry2[3] != None: 
-            headx2.set_text(entry2[3])
+            headx2.set_text(entry2[3][entry2[1]])
         hbox2.pack_start(headx2, True, 0, 0)
         lab3b = Gtk.Label(label="        ")
         hbox2.pack_start(lab3b, False, 0, 0)
         self.arr.append((entry2[1], headx2))
-        self.vspacer(vbox)
+        
+        #self.vspacer(vbox)
         vbox.pack_start(hbox2, True, True, 0)
         return lab1, lab2  
     
@@ -277,7 +273,7 @@ class NewCust(Gtk.Window):
         
         headx = Gtk.Entry();
         if defval != None: 
-            headx.set_text(defval)
+            headx.set_text(defval[labname])
         hbox2.pack_start(headx, True, 0, 0)
         lab3 = Gtk.Label(label="        ")
         hbox2.pack_start(lab3, False, 0, 0)
@@ -300,7 +296,11 @@ class NewCust(Gtk.Window):
         lab2 = Gtk.Label(label=labtext); lab2.set_alignment(1, 0)
         lab2.set_tooltip_text(tip)
         hbox2.pack_start(lab2, False , 0, 0)
-        sw = self.scrolledtext(labname)
+        if defval:
+            sw = self.scrolledtext(labname, defval[labname])
+        else:
+            sw = self.scrolledtext(labname, defval)
+            
         self.spacer(hbox2)
         hbox2.pack_start(sw, True, True, 0)
         self.spacer(hbox2)
@@ -328,6 +328,7 @@ class NewCust(Gtk.Window):
     wid.modify_bg(Gtk.StateType.SELECTED, col)
     #hbox2.pack_start(wid, False)'''
     
+
 
 
 
