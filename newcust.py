@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, getopt, signal
-#import gobject, gtk, pango
+import os, sys, getopt, signal, time
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -63,6 +62,10 @@ class NewCust(Gtk.Window):
             pass 
 
         self.arr.append(("custid", str(uuid_name)))
+        if datax == None:
+            self.arr.append(("cdate", time.asctime()))
+            
+        self.arr.append(("udate", time.asctime()))
         
         # We use gobj instead of SIGALRM, so it is more multi platform
         #GObject.timeout_add(1000, self.handler_tick)
@@ -328,13 +331,4 @@ class NewCust(Gtk.Window):
     wid.modify_bg(Gtk.StateType.SELECTED, col)
     #hbox2.pack_start(wid, False)'''
     
-
-
-
-
-
-
-
-
-
-
+# EOF

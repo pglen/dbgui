@@ -8,7 +8,7 @@ import sys, os, time, uuid, sqlite3
 
 fields = ['lob',  'city', 'cname', 'zip', 'freetext', 'dob', 
         'country', 'numid', 'email2', 'county', 'phone', 'addr2',
-        'comments', 'addr1', 'phone2', 'email', 'log', 'custid' ]
+        'comments', 'addr1', 'phone2', 'email', 'log', 'custid', 'cdate', 'udate' ]
 
 # 'lob',  
 # 'dob', 
@@ -54,15 +54,17 @@ class dibasql():
             
             sqlstr +=  ")"
             
-            #print "sql str: '" + sqlstr + "'"
+            #print "creation sql str: '" + sqlstr + "'"
             
             try:
                 self.c.execute(sqlstr)
             except:
                 print "Cannot initiate database", sys.exc_info()
-            
+                print "sql str: '" + sqlstr + "'"
+                           
             '''self.c.execute("create table if not exists pos \
-                       (pri INTEGER PRIMARY KEY, head text, xx integer, yy integer, ss integer)")
+                       (pri INTEGER PRIMARY KEY, head text, xx integer, \
+                            yy integer, ss integer)")
             self.c.execute("create index if not exists  ipos on pos (head)")            
             self.c.execute("create index if not exists  ppos on pos (pri)")'''
             
@@ -71,7 +73,8 @@ class dibasql():
             self.conn.commit()            
         except:
             print "Cannot create sql tables", sys.exc_info() 
-             
+            print "sql str: '" + sqlstr + "'"
+                 
         finally:    
             # We close the cursor, we are done with it
             #c.close()    
@@ -99,6 +102,7 @@ class dibasql():
                 return ddd
         except:
             print "Cannot get sql data", sys.exc_info()             
+            print "sql str: '" + sqlstr + "'"
          
     # --------------------------------------------------------------------        
     # Return False if cannot put data
@@ -107,6 +111,7 @@ class dibasql():
     
         #got_clock = time.clock()         
         #print "datax", datax
+        sqlstr = ""
         ret = True  
         try:      
             self.c.execute("select * from clients where custid == ?", (datax['custid'], ))
@@ -145,6 +150,7 @@ class dibasql():
             self.conn.commit()          
         except:
             print "Cannot put sql data", sys.exc_info()             
+            print "sqlstr", sqlstr
             ret = False  
         finally:
             #c.close     
@@ -172,13 +178,21 @@ class dibasql():
     # --------------------------------------------------------------------        
     # Get names
     
-    def   getcustnames(self):
-        rr = []; ss = []
+    def   getcustnames(self, cust = None):
+        rr = []; ss = []; sqlstr = ""
+        if cust:
+            sqlstr = "select pri, cname, custid, comments, udate from clients where cname like '%" + \
+                    cust + "%'"
+        else:
+           sqlstr = "select pri, cname, custid, comments, udate from clients order by udate desc  limit 100"
         try:      
-            self.c.execute("select pri, cname, custid,  comments from clients")
+            #print "sql", ccc
+            self.c.execute(sqlstr)
+            
             rr = self.c.fetchall()
         except:
             print "getcustnames: Cannot get sql data", sys.exc_info() 
+            print "sql str: '" + sqlstr + "'"
             raise
         finally:
             pass
@@ -234,6 +248,7 @@ class dibasql():
             return rr
         else:
             return None
+
 
 
 

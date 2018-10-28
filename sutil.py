@@ -143,5 +143,17 @@ class Unbuffered(object):
    def __getattr__(self, attr):
        return getattr(self.stream, attr)
 
+# Time to str and str to time
+
+def time_n2s(ttt):
+    sss = time.ctime(ttt)
+    return sss
+              
+def time_s2n(sss):
+    rrr = time.strptime(sss)
+    ttt = time.mktime(rrr)
+    return ttt
+
+
 
 

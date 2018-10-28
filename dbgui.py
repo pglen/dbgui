@@ -25,7 +25,7 @@ dataroot = os.getcwd()
 #print "datatroot", dataroot
 
 data_dir        = dataroot + "/data/customers/"
-key_dir         = dataroot + "/data/customers/keys/"
+#key_dir         = dataroot + "/data/customers/keys/"
 #currency_dir    = dataroot + "/data/currency/"
 blockchain_dir  = dataroot + "/data/blockchain/"
 audit_dir       = dataroot + "/data/audit/"
@@ -90,22 +90,19 @@ class MainWin():
         vbox.pack_start(hbox2, True, True, 0)
         lab2 = Gtk.Label(label="");  hbox.pack_start(lab2, True, 0, 0)
         
-        ib2 = self.imgbutt("images/person.png", " _New Client ", self.new_account, window)
-        hbox.pack_start(ib2, False, 0, 0)
-        
-        ib2 = self.imgbutt("images/select.png", " _Edit Client ", self.ed_account, window)
+        ib2 = self.imgbutt("images/person.png", " Ne_w Client ", self.new_account, window)
         hbox.pack_start(ib2, False, 0, 0)
         
         ib2 = self.imgbutt("images/select.png", " Selec_t Client ", self.sel_account, window)
         hbox.pack_start(ib2, False, 0, 0)
         
+        ib2 = self.imgbutt("images/person3.png", " _Edit Client ", self.ed_account, window)
+        hbox.pack_start(ib2, False, 0, 0)
+        
         ib2 = self.imgbutt("images/search.png", " _Search ", self.search, window)
         hbox.pack_start(ib2, False, 0, 0)
         
-        ib2 = self.imgbutt("images/transact.png", " Sho_w Transactions ", self.transact, window)
-        hbox.pack_start(ib2, False, 0, 0)
-        
-        ib2 = self.imgbutt("images/summary.png", " Show Summary ", self.show_one, window)
+        ib2 = self.imgbutt("images/transact.png", " Show T_ransactions ", self.transact, window)
         hbox.pack_start(ib2, False, 0, 0)
         
         lab2e = Gtk.Label(label="");  hbox.pack_start(lab2e, True, 0, 0)
@@ -113,16 +110,19 @@ class MainWin():
         hbox3 = Gtk.HBox()
         lab3 = Gtk.Label(label="");  hbox3.pack_start(lab3, True, 0, 0)
         
-        ib2 = self.imgbutt("images/hands.png", "  _Hide All  ", self.hide_all, window)
+        ib2 = self.imgbutt("images/person2.png", "  _Delete Client  ", self.del_client, window)
         hbox3.pack_start(ib2, False, 0, 0)
         
         ib2 = self.imgbutt("images/hands.png", "  H_ide One  ", self.hide_one, window)
         hbox3.pack_start(ib2, False, 0, 0)
         
-        ib2 = self.imgbutt("images/hands.png", "  _Delete One   ", self.del_one, window)
-        hbox3.pack_start(ib2, False, 0, 0)
+        #ib2 = self.imgbutt("images/hands.png", "  _Delete One   ", self.del_one, window)
+        #hbox3.pack_start(ib2, False, 0, 0)
         
         ib2 = self.imgbutt("images/hands.png", "  Hide _Main  ", self.hide_main, window)
+        hbox3.pack_start(ib2, False, 0, 0)
+        
+        ib2 = self.imgbutt("images/summary.png", " Show Summ_ary ", self.show_one, window)
         hbox3.pack_start(ib2, False, 0, 0)
         
         ib2 = self.imgbutt("images/hands.png", "   E_xit  ", self.exit_all, window)
@@ -298,8 +298,8 @@ class MainWin():
     def search(self, area, me):
         print "search"
     
-    def hide_all(self, area, me):
-        #print "hide_all"
+    def del_client(self, area, me):
+        #print "del_client"
         return False 
                          
     def hide_main(self, area, me):
@@ -346,8 +346,10 @@ def help():
     print "            -v        - Verbose (to stdout and log)"
     print "            -c        - Dump config"
     print "            -s        - Show database"
+    #print "            -x        - Extras like test time routine"
     print "            -r        - Remove database (test oly)"
     print "            -h        - Help"
+    print "            -?        - Help"
     print
 
 def softmkdir(dirx):
@@ -358,6 +360,16 @@ def softmkdir(dirx):
         print "Cannot make directory:",  dirx
         raise
         
+def test_time():
+    ttt = time.time()
+    sss = sutil.time_n2s(ttt)
+    ttt2 = sutil.time_s2n(sss)
+    sss2 = sutil.time_n2s(ttt2)
+    
+    print ttt, ttt2
+    print sss
+    print sss2
+    
 # ------------------------------------------------------------------------
 # Start of program:
 
@@ -370,10 +382,13 @@ if __name__ == '__main__':
     show_database = False; remove_database = False
     pg_debug = 0
     
+    sys.stdout = sutil.Unbuffered(sys.stdout)
+    sys.stderr = sutil.Unbuffered(sys.stderr)
+
     #  Preconditions
     try:
         softmkdir(data_dir)
-        softmkdir(key_dir)
+        #softmkdir(key_dir)
         #softmkdir(currency_dir)
         softmkdir(blockchain_dir)
         softmkdir(audit_dir)
@@ -393,7 +408,7 @@ if __name__ == '__main__':
     
     opts = []; args = []
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:avchsr")
+        opts, args = getopt.getopt(sys.argv[1:], "d:avchsr?x")
     except getopt.GetoptError, err:
         print "Invalid option(s) on command line:", err
         sys.exit(1)
@@ -412,11 +427,13 @@ if __name__ == '__main__':
                 print "Bad argument on option -d:", sys.exc_info() 
                 sys.exit(2)
                 
+        if aa[0] == "-?": help();  exit(1)
         if aa[0] == "-h": help();  exit(1)
         if aa[0] == "-v": verbose = True            
         if aa[0] == "-g": showgtk(); exit(1);
         if aa[0] == "-c": show_config = True            
         if aa[0] == "-t": show_timing = True
+        if aa[0] == "-x": test_time(); exit(1);
         if aa[0] == "-s": show_database = True
         if aa[0] == "-r": remove_database = True
 
@@ -427,11 +444,18 @@ if __name__ == '__main__':
     if show_database:
         db, dd = dibadb.getall()
         print "Showing database info:"
+        
+        if not len(db):
+            print "No data"
+            exit(0)
+        
         for aa in range(len(db)):
             for bb in range(len(dd)):
                 print dd[bb][0], "= '" + str(db[aa][bb]) + "',\t", 
             print; print
-        
+        print "End database info."
+        sys.exit(0)
+          
     # For testing
     if remove_database:
         print "This is for testing / development. Are you sure? (yes/no)"
@@ -447,19 +471,8 @@ if __name__ == '__main__':
     #if(show_config):
     #    print dibadb.getall()
 
-    sys.stdout = sutil.Unbuffered(sys.stdout)
-    sys.stderr = sutil.Unbuffered(sys.stderr)
-            
     mainwin = MainWin()
     mainwin.window.show_all()    
     Gtk.main()
 
-
-
-
-
-
-
-
-
-
+# EOF
