@@ -296,10 +296,30 @@ class MainWin():
         ret = ""; retcode = 0
         
     def search(self, area, me):
-        print "search"
+        #print "search"
+        pass
     
     def del_client(self, area, me):
         #print "del_client"
+        if self.serial == "":
+            sutil.message("\nPlease select a client first.\n", self.window)
+            return
+            
+        datax  = dibadb.get(self.serial)
+            
+        #sutil.message("delete " + self.serial + "?", self.window)
+        ret = sutil.yes_no_cancel("Are you sure?", 
+                "Are you sure you want to delete client '" + datax['cname'] + "' ?", 
+                        False, self.window)
+        
+        #print "ret", ret
+        if ret == Gtk.ResponseType.YES:
+            self.progress("Deleting ...")
+            dibadb.rm(self.serial)
+            self.progress("Deleted.")
+        else:
+            self.progress("Delete cancelled")
+            
         return False 
                          
     def hide_main(self, area, me):

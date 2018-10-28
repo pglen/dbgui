@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, traceback, os, time
+import sys, traceback, os, time, warnings
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -154,6 +154,69 @@ def time_s2n(sss):
     ttt = time.mktime(rrr)
     return ttt
 
+def yes_no_cancel(title, message, cancel = True, parent = None):
+
+    #warnings.simplefilter("ignore")
+    dialog = Gtk.Dialog(title,
+                   None,
+                   Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
+
+    
+    dialog.set_default_response(Gtk.ResponseType.YES)
+    dialog.set_position(Gtk.WindowPosition.CENTER)
+    dialog.set_transient_for(parent)
+ 
+    sp = "     "
+    label = Gtk.Label(message); 
+    label2 = Gtk.Label(sp);      label3 = Gtk.Label(sp)
+    label2a = Gtk.Label(sp);     label3a = Gtk.Label(sp)
+    
+    hbox = Gtk.HBox() ;     
+    
+    hbox.pack_start(label2, 0, 0, 0);  
+    hbox.pack_start(label, 1, 1, 0);     
+    hbox.pack_start(label3, 0, 0, 0)
+    
+    dialog.vbox.pack_start(label2a, 0, 0, 0);  
+    dialog.vbox.pack_start(hbox, 0, 0, 0)
+    dialog.vbox.pack_start(label3a, 0, 0, 0);  
+    
+    dialog.add_button("_Yes", Gtk.ResponseType.YES)
+    dialog.add_button("_No", Gtk.ResponseType.NO)
+    
+    if cancel:
+        dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+
+    dialog.connect("key-press-event", yn_key, cancel)
+    #dialog.connect("key-release-event", yn_key, cancel)
+    #warnings.simplefilter("default")
+    
+    dialog.show_all()
+    response = dialog.run()       
+    # Convert all responses to cancel
+    if  response == Gtk.ResponseType.CANCEL or \
+        response == Gtk.ResponseType.REJECT or \
+        response == Gtk.ResponseType.CLOSE  or \
+        response == Gtk.ResponseType.DELETE_EVENT:
+        response = Gtk.ResponseType.CANCEL        
+    dialog.destroy()
+    
+    return  response 
+
+def yn_key(win, event, cancel):
+    #print event
+    if event.keyval == Gdk.KEY_y or \
+        event.keyval == Gdk.KEY_Y:
+        win.response(Gtk.ResponseType.YES)
+        
+    if event.keyval == Gdk.KEY_n or \
+        event.keyval == Gdk.KEY_N:
+        win.response(Gtk.ResponseType.NO)
+
+    if cancel:
+        if event.keyval == Gdk.KEY_c or \
+            event.keyval == Gdk.KEY_C:
+            win.response(Gtk.ResponseType.CANCEL)
 
 
 

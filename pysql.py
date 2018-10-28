@@ -105,6 +105,18 @@ class dibasql():
             print "sql str: '" + sqlstr + "'"
          
     # --------------------------------------------------------------------        
+    # Return False if cannot rm data
+    
+    def   rm(self, serial):
+        sqlstr = "delete from clients where custid == ?"
+        try:      
+            self.c.execute(sqlstr, (serial,))
+            self.conn.commit()            
+        except:
+            print "Cannot delete sql data", sys.exc_info()             
+            print "sql str: '" + sqlstr + "'", (serial,)
+        
+    # --------------------------------------------------------------------        
     # Return False if cannot put data
     
     def   put(self, datax):
@@ -181,8 +193,8 @@ class dibasql():
     def   getcustnames(self, cust = None):
         rr = []; ss = []; sqlstr = ""
         if cust:
-            sqlstr = "select pri, cname, custid, comments, udate from clients where cname like '%" + \
-                    cust + "%'"
+            sqlstr = "select pri, cname, custid, comments, udate from clients where cname like '" + \
+                    cust + "'"
         else:
            sqlstr = "select pri, cname, custid, comments, udate from clients order by udate desc  limit 100"
         try:      

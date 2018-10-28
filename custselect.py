@@ -27,7 +27,7 @@ from gi.repository import GLib
     COLUMN_DATE
 ) = range(5)
 
-verbose = 1
+verbose = 0
 
 # -------------------------------------------------------------------
 class ListCust(Gtk.Window):
@@ -105,7 +105,26 @@ class ListCust(Gtk.Window):
         GObject.timeout_add(100, self.handler_tick)
     
     def butt_handler(self, but):
-        print but.get_label()
+        ttt = but.get_label()
+        res = [];  self.lstore.clear()
+        try:
+            res = self.dibadb.getcustnames(ttt + '%')
+            '''print "Listing search res:"
+            for aa in res:
+                print aa
+            print "Done,"'''
+            
+        except:
+            self.self2.progress("Cannot fetch search results.")
+            print "Cannot fetch name list.", sys.exc_info()
+            pass
+        
+        if res == []:
+            sutil.message("\nNo matcing record for '%s'.\n\n" % ttt, self)
+            return
+        
+        self.fill_data(res)
+        
 
     def tree_sel(self, xtree, xiter, xpath):
         #print("tree_sel", xtree, xiter, xpath)
@@ -256,6 +275,10 @@ class ListCust(Gtk.Window):
         bbb.connect("clicked", self.click_src)
         hbox2.pack_start(bbb, False, 0, 0)
         
+        bbb = Gtk.Button.new_with_mnemonic("_Clear Search")
+        bbb.connect("clicked", self.click_clear)
+        hbox2.pack_start(bbb, False, 0, 0)
+        
         lab3 = Gtk.Label(label="        ")
         hbox2.pack_start(lab3, True, 0, 0)
         #self.arr.append((entry1[1], headx))
@@ -273,11 +296,11 @@ class ListCust(Gtk.Window):
            
         res = [];  self.lstore.clear()
         try:
-            res = self.dibadb.getcustnames(ttt)
-            print "Listing search res:"
+            res = self.dibadb.getcustnames("%" + ttt + "%")
+            '''print "Listing search res:"
             for aa in res:
                 print aa
-            print "Done,"
+            print "Done,"'''
             
         except:
             self.self2.progress("Cannot fetch search results.")
@@ -290,6 +313,23 @@ class ListCust(Gtk.Window):
         
         self.fill_data(res)
         
+    def click_clear(self, butt):
+        self.src_box.set_text("")
+        
+        res = [];  self.lstore.clear()
+        try:
+            res = self.dibadb.getcustnames()
+            print "Listing search res:"
+            for aa in res:
+                print aa
+            print "Done,"
+            
+        except:
+            self.self2.progress("Cannot fetch search results.")
+            print "Cannot fetch name list.", sys.exc_info()
+            pass
+        
+        self.fill_data(res)
           
 # testing ...
 
