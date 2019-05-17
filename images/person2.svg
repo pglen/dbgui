@@ -16,7 +16,7 @@
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="person2.svg"
-   inkscape:export-filename="C:\develop6\fdn\dbgui\images\person.png"
+   inkscape:export-filename="C:\msys64\home\peterglen\pgpygtk\dbgui\images\person2.png"
    inkscape:export-xdpi="97.25"
    inkscape:export-ydpi="97.25">
   <defs
@@ -28,17 +28,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="-451.16985"
-     inkscape:cy="560"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="122.79053"
+     inkscape:cy="792.34175"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:snap-global="false"
-     inkscape:window-width="1366"
-     inkscape:window-height="745"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1680"
+     inkscape:window-height="1027"
+     inkscape:window-x="1912"
+     inkscape:window-y="15"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -83,5 +83,21 @@
          d="M 428.80664 385.41211 A 232.85714 187.14284 0 0 0 405.54102 385.98438 A 232.85714 187.14284 0 0 0 192.17188 587.45898 A 232.85714 187.14284 0 0 0 201.19141 625.37695 L 647.38672 625.37695 A 232.85714 187.14284 0 0 0 656.42383 557.83398 L 424.28516 572.51953 L 656.375 557.32812 A 232.85714 187.14284 0 0 0 428.80664 385.41211 z "
          style="fill:#ee0a07;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.11399996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
+    <rect
+       style="opacity:0.93199978;fill:#eef2ed;fill-opacity:1;stroke-width:0.26458332"
+       id="rect5767"
+       width="42.495853"
+       height="2.9399648"
+       x="141.89218"
+       y="3.6132913"
+       transform="rotate(51.218057)" />
+    <rect
+       style="opacity:0.93199978;fill:#eef2ed;fill-opacity:1;stroke-width:0.26458332"
+       id="rect5767-6"
+       width="42.495857"
+       height="2.9399648"
+       x="-69.713791"
+       y="154.63911"
+       transform="rotate(-54.122824)" />
   </g>
 </svg>

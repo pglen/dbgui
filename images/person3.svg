@@ -16,7 +16,7 @@
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="person3.svg"
-   inkscape:export-filename="C:\msys32\home\peterglen\pgpygtk\dbgui\images\person3.png"
+   inkscape:export-filename="C:\msys64\home\peterglen\pgpygtk\dbgui\images\person3.png"
    inkscape:export-xdpi="97.25"
    inkscape:export-ydpi="97.25">
   <defs
@@ -28,17 +28,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="-451.16985"
-     inkscape:cy="560"
+     inkscape:zoom="0.7"
+     inkscape:cx="-297.95969"
+     inkscape:cy="707.31282"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:snap-global="false"
-     inkscape:window-width="1366"
-     inkscape:window-height="745"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1680"
+     inkscape:window-height="1027"
+     inkscape:window-x="1912"
+     inkscape:window-y="15"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -82,6 +82,70 @@
          transform="scale(0.26458333)"
          d="M 428.80664 385.41211 A 232.85714 187.14284 0 0 0 405.54102 385.98438 A 232.85714 187.14284 0 0 0 192.17188 587.45898 A 232.85714 187.14284 0 0 0 201.19141 625.37695 L 647.38672 625.37695 A 232.85714 187.14284 0 0 0 656.42383 557.83398 L 424.28516 572.51953 L 656.375 557.32812 A 232.85714 187.14284 0 0 0 428.80664 385.41211 z "
          style="fill:#04ef07;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.11399996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <g
+       transform="translate(70.783042,14.269034)"
+       id="g5162">
+      <rect
+         y="99.487816"
+         x="15.768901"
+         height="42.495853"
+         width="31.003265"
+         id="rect5100"
+         style="opacity:0.93199978;fill:#d6d5d5;fill-opacity:1;stroke-width:0.26458332" />
+      <rect
+         y="98.418739"
+         x="14.96709"
+         height="7.4835467"
+         width="32.60688"
+         id="rect5102"
+         style="opacity:0.93199978;fill:#67676a;fill-opacity:1;stroke-width:0.26458332" />
+      <g
+         transform="translate(-67.084651,-16.83798)"
+         id="g5151">
+        <rect
+           style="opacity:0.93199978;fill:#13180f;fill-opacity:1;stroke-width:0.26458332"
+           id="rect5104"
+           width="22.183371"
+           height="1.0690781"
+           x="87.530769"
+           y="127.28387" />
+        <rect
+           style="opacity:0.93199978;fill:#13180f;fill-opacity:1;stroke-width:0.26458332"
+           id="rect5104-0"
+           width="22.183371"
+           height="1.0690781"
+           x="87.530769"
+           y="132.20163" />
+        <rect
+           style="opacity:0.93199978;fill:#13180f;fill-opacity:1;stroke-width:0.26458332"
+           id="rect5104-7"
+           width="22.183371"
+           height="1.0690781"
+           x="87.530769"
+           y="137.11938" />
+        <rect
+           style="opacity:0.93199978;fill:#13180f;fill-opacity:1;stroke-width:0.26458332"
+           id="rect5104-06"
+           width="22.183371"
+           height="1.0690781"
+           x="87.530769"
+           y="142.03714" />
+        <rect
+           style="opacity:0.93199978;fill:#13180f;fill-opacity:1;stroke-width:0.26458332"
+           id="rect5104-5"
+           width="22.183371"
+           height="1.0690781"
+           x="87.530769"
+           y="146.9549" />
+        <rect
+           style="opacity:0.93199978;fill:#13180f;fill-opacity:1;stroke-width:0.26458332"
+           id="rect5104-3"
+           width="22.183371"
+           height="1.0690781"
+           x="87.530769"
+           y="151.87265" />
+      </g>
     </g>
   </g>
 </svg>
