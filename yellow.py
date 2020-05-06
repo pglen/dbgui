@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
+
 import os, sys, getopt, signal, random, time, warnings
 #import gobject, gtk, pango
 
@@ -11,7 +14,7 @@ from gi.repository import GObject
 from gi.repository import GLib
 
 import pysql, sutil
- 
+
 GAP = 4                     # Gap in pixels
 TABSTOP = 4
 
@@ -77,37 +80,37 @@ class stickDoc(Gtk.DrawingArea):
         #self.connect("destroy", self.OnExit)
 
     def area_button(self, area, event):
-        #print "yellow butt"
+        #print( "yellow butt")
         if  event.type == Gdk.EventType.BUTTON_PRESS:
             self.ex = event.x; self.ey = event.y
         elif  event.type == Gdk._2BUTTON_PRESS:
-            #se = sticked.StickEd(self.par.window, 
+            #se = sticked.StickEd(self.par.window,
             #    self.par.me.mainwin.done_dlg, self.head, self.text)
             pass
         return False
 
     def area_motion(self, area, event):
-        #print "motion event", event.get_state(), event.x, event.y
+        #print( "motion event", event.get_state(), event.x, event.y)
         if event.get_state() & Gdk.ModifierType.BUTTON1_MASK:
-            #print "dragx", self.ex, event.x, "dragy", self.ey, event.y
+            #print( "dragx", self.ex, event.x, "dragy", self.ey, event.y)
             #par = self.get_parent_window()
             x, y = self.parwin.get_position()
             newx = int(x + (event.x - self.ex))
             newy = int( y + (event.y-self.ey))
-            
+
             self.parwin.move(newx, newy)
             self.parwin.xx = newx; self.parwin.yy = newy
             #global stickdb
             #stickdb.putpos(self.head, newx, newy)
-            #print  self.parwin.xx, self.parwin.yy
+            #print(  self.parwin.xx, self.parwin.yy)
 
     def key_press_event(self, text_view, event):
-        print "widget keypress"
+        print( "widget keypress")
         #if event.get_state() & Gdk.ModifierType.MOD1_MASK:
         #    if event.keyval == Gdk.KEY_x or event.keyval == Gdk.KEY_X:
         #        sys.exit(0)
         #return False
-        return True 
+        return True
 
     def setfont(self, fam, size):
         fd = Pango.FontDescription()
@@ -150,7 +153,7 @@ class stickDoc(Gtk.DrawingArea):
         self.window.draw_layout(gcx, x, y, self.pangolayout, self.fgcolor, self.bgcolor)
         cxx2, cyy2 = self.pangolayout.get_pixel_size()
 
-        #print  cxx, cyy, cxx2, cyy2
+        #print(  cxx, cyy, cxx2, cyy2)
 
         # Resize if needed:
         if cxx < cxx2: cxx = cxx2
@@ -164,7 +167,7 @@ class stickDoc(Gtk.DrawingArea):
         win = self.get_window()
         ww, hh = Gdk.Window.get_size(win)
 
-        #print "ww,hh", ww, hh
+        #print( "ww,hh", ww, hh)
         ww -= 1; hh -= 1
 
         # Draw Closer cross
@@ -246,12 +249,12 @@ class stickWin():
         window.add(self.sticky)
         window.show_all()
         sutil.usleep(1)           # Present window
-        
+
         #Gdk.Window.set_skip_pager_hint(window.get_window(), True )
         #Gdk.Window.set_skip_taskbar_hint(window.get_window(), True )
         #window.set_keep_above(False)
         #Gdk.Window.set_decorations(window.get_window(), Gdk.DECOR_BORDER)
-        
+
         if Gdk.Display.supports_composite(Gdk.Display.get_default()):
             Gdk.Window.set_composited(window.get_window(), True )
             Gdk.Window.set_opacity(window.get_window(), .5)
@@ -261,7 +264,7 @@ class stickWin():
         for ww in slist.data:
             xx, yy = Gdk.Window.get_position(ww.window.get_window())
             ww, hh = Gdk.Window.get_size(ww.window.get_window())
-            print "setting position", xx, yy, "size", ww, hh
+            print( "setting position", xx, yy, "size", ww, hh)
             if yyy + hh >= hhh - 2 * BUTSTOP:
                 xxx += 200
                 yyy = TOPSTOP
@@ -270,8 +273,8 @@ class stickWin():
             else:
                 yyy +=  hh + 4
            '''
-           
-        #print  xxx, yyy
+
+        #print(  xxx, yyy)
         #window.move(xxx, yyy)
         #self.window.xx = xxx; self.window.yy = yyy
         #slist.add(self)
@@ -279,7 +282,7 @@ class stickWin():
         #stickdb = pysql.sticksql(config_dir + "/data")
 
     def area_button(self, area, event):
-        #print "win butt", event
+        #print( "win butt", event)
         win = self.window.get_window()
         ww, hh = Gdk.Window.get_size(win)
 
@@ -290,34 +293,34 @@ class stickWin():
 
         if event.x > ulx and event.x < urx:
             if event.y > ury and event.y < lry:
-                #print "hit", event
+                #print( "hit", event)
                 self.window.destroy()
         return False
 
     def key_press_event(self, text_view, event):
-        print "window keypress", self.head
+        print( "window keypress", self.head)
         #if event.get_state() & Gdk.ModifierType.MOD1_MASK:
         #    if event.keyval == Gdk.KEY_x or event.keyval == Gdk.KEY_X:
         #        sys.exit(0)
         #return False
-        
+
         if event.keyval == Gdk.KEY_Tab:
             #self.me.mainwin.next(self)
             pass
-        return False 
+        return False
 
-    def invalidate(self, rect = None):                        
+    def invalidate(self, rect = None):
         if rect == None:
             ww, hh = self.window.window.get_size()
             rect = (0,0, ww, hh)
-        #print "Invalidate:", rect
+        #print( "Invalidate:", rect)
         self.window.window.invalidate_rect(rect, False)
 
     def OnExit(self, aa, bb = ""):
-        print "onexit", bb
+        print( "onexit", bb)
         #while Gtk.main_level():
         #    Gtk.main_quit()
-        
+
         xx, yy = self.window.window.get_position()
 
         #pedconfig.conf.sql.put("xx", xx)
@@ -327,8 +330,9 @@ class stickWin():
 
         #//pedconfig.conf.sql.put("ww", ww)
         #//pedconfig.conf.sql.put("hh", hh)
-        
-        #print "remember sticky", xx, yy, ww, hh
+
+        #print( "remember sticky", xx, yy, ww, hh)
+
 
 
 

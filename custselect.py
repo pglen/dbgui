@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import print_function
+
 # Tree View/List Store
 
 import os, sys, getopt, signal, uuid, subprocess
@@ -31,57 +34,57 @@ verbose = 0
 
 # -------------------------------------------------------------------
 class ListCust(Gtk.Window):
-      
+
     def __init__(self, self2, dibadb):
-    
+
         # Create window, etc
         self.self2 = self2
         self.dibadb = dibadb
         GObject.GObject.__init__(self)
-        
+
         self.set_title("Client List")
-        
+
         self.set_transient_for(self2.window)
         self.set_modal(True)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.ok = False
         self.results = ()
-        
+
         www, hhh = sutil.get_screen_wh()
         self.set_size_request(3*www/4, 3*hhh/4)
 
         vbox = Gtk.VBox(False, 0)
         self.add(vbox)
 
-        self.connect("key-press-event", self.key_press_event)        
-        
+        self.connect("key-press-event", self.key_press_event)
+
         hbox = Gtk.HBox(False, 2)
         vbox.pack_start(hbox, False, 0, 8)
         hbox.pack_start(Gtk.Label("    "), True, True, 0)
-        
+
         for aa in range(ord("N") - ord("A") + 1):
             sss =  str(chr(ord("A") + aa ))
             bbb = Gtk.Button(sss)
             bbb.connect("clicked", self.butt_handler)
             hbox.pack_start(bbb, False, 0, 0)
         hbox.pack_start(Gtk.Label("    "), True, True, 0)
-        
+
         hbox2 = Gtk.HBox(False, 2)
         vbox.pack_start(hbox2, False, 0, 2)
         hbox2.pack_start(Gtk.Label("    "), True, True, 0)
-        
+
         for aa in range(ord("Z") - ord("O") + 1):
             sss =  str(chr(ord("O") + aa ) )
             bbb = Gtk.Button(sss)
             bbb.connect("clicked", self.butt_handler)
             hbox2.pack_start(bbb, False, 0, 0)
-            
+
         hbox2.pack_start(Gtk.Label("    "), True, True, 0)
 
         tp1 =("Search: ", "cname", "Enter search string (TAB to advance)", None)
-        
+
         self.src_box = self.srcentry(vbox, tp1)
-            
+
         sw = Gtk.ScrolledWindow()
         sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
         sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -94,37 +97,38 @@ class ListCust(Gtk.Window):
         self.treeview.set_search_column(COLUMN_DESCRIPTION)
         self.add_columns(self.treeview)
         sw.add(self.treeview)
-        
+
         self.treeview.connect("row-activated",  self.tree_sel)
         self.treeview.connect("cursor-changed",  self.tree_sel_row)
-        
+
         self.show_all()
-        self.src_box.grab_focus() 
-        
+        self.src_box.grab_focus()
+
         sutil.usleep(10)
         GObject.timeout_add(100, self.handler_tick)
-    
+
     def butt_handler(self, but):
         ttt = but.get_label()
         res = [];  self.lstore.clear()
         try:
             res = self.dibadb.getcustnames(ttt + '%')
-            '''print "Listing search res:"
+            '''print( "Listing search res:")
             for aa in res:
-                print aa
-            print "Done,"'''
-            
+                print( aa)
+            print( "Done,")
+            '''
+
         except:
             self.self2.progress("Cannot fetch search results.")
-            print "Cannot fetch name list.", sys.exc_info()
+            print( "Cannot fetch name list.", sys.exc_info())
             pass
-        
+
         if res == []:
             sutil.message("\nNo matcing record for '%s'.\n\n" % ttt, self)
             return
-        
+
         self.fill_data(res)
-        
+
 
     def tree_sel(self, xtree, xiter, xpath):
         #print("tree_sel", xtree, xiter, xpath)
@@ -136,38 +140,38 @@ class ListCust(Gtk.Window):
             xstr3 = xmodel.get_value(xiter, 2)
             self.results = (xstr, xstr2, xstr3)
             self.destroy()
-        
+
     def tree_sel_row(self, xtree):
         pass
-        #print "Selected", xstr, xstr2
+        #print( "Selected", xstr, xstr2)
         '''sel = xtree.get_selection()
         xmodel, xiter = sel.get_selected()
         if xiter:
             xstr = xmodel.get_value(xiter, 0)
             xstr2 = xmodel.get_value(xiter, 1)'''
-                
+
     # Add columns to the tree view
     def handler_tick(self):
-        
+
         self.self2.progress("Reading client data")
-            
+
         res = []; cnt = 0
         try:
             res = self.dibadb.getcustnames()
-            
+
             if verbose:
-                print "Listing database:"
+                print( "Listing database:")
                 for aa in res:
-                    print aa
-                print "Done,"
-            
+                    print( aa)
+                print( "Done,")
+
         except:
             self.self2.progress("Cannot fetch name list.")
-            print "Cannot fetch name list.", sys.exc_info()
+            print( "Cannot fetch name list.", sys.exc_info())
             pass
-        
+
         self.fill_data(res)
-        
+
     def create_model(self):
         self.lstore = Gtk.ListStore(
             GObject.TYPE_STRING,
@@ -175,14 +179,14 @@ class ListCust(Gtk.Window):
             GObject.TYPE_STRING,
             GObject.TYPE_STRING,
             GObject.TYPE_STRING)
-        
+
     def limstr(self, strx):
         if len(strx) > 44:
             stry = strx[0:44]
         else:
             stry = strx
         return stry
-        
+
     def fill_data(self, res):
         for item in res:
             iter = self.lstore.append()
@@ -245,10 +249,10 @@ class ListCust(Gtk.Window):
     def key_press_event(self, win, event):
         if event.keyval == Gdk.KEY_Escape:
             self.destroy()
-        #print "keystate", event.get_state()
+        #print( "keystate", event.get_state())
         if event.keyval == Gdk.KEY_x and event.get_state() & Gdk.ModifierType.MOD1_MASK:
             self.destroy()
-    
+
     # Run as modal dialog until destroyed
     def run(self):
         self.show_all()
@@ -256,9 +260,9 @@ class ListCust(Gtk.Window):
         return self.ok
 
     def srcentry(self, vbox, entry1):
-    
+
         hbox2 = Gtk.HBox(False, 4)
-        
+
         lab1a = Gtk.Label(label="      ")
         hbox2.pack_start(lab1a, True, 0, 0)
         lab1 = Gtk.Label(label=entry1[0]) #; lab1.set_alignment(1, 2)
@@ -267,70 +271,71 @@ class ListCust(Gtk.Window):
         lab1a = Gtk.Label(label="      ")
         hbox2.pack_start(lab1a, False, 0, 0)
         headx = Gtk.Entry();  headx.set_width_chars(33)
-        if entry1[3] != None: 
+        if entry1[3] != None:
             headx.set_text(entry1[3][entry1[1]])
         hbox2.pack_start(headx, False, 0, 0)
-       
+
         bbb = Gtk.Button.new_with_mnemonic("_Search")
         bbb.connect("clicked", self.click_src)
         hbox2.pack_start(bbb, False, 0, 0)
-        
+
         bbb = Gtk.Button.new_with_mnemonic("_Clear Search")
         bbb.connect("clicked", self.click_clear)
         hbox2.pack_start(bbb, False, 0, 0)
-        
+
         lab3 = Gtk.Label(label="        ")
         hbox2.pack_start(lab3, True, 0, 0)
         #self.arr.append((entry1[1], headx))
-                
+
         vbox.pack_start(hbox2, False, 0, 4)
-        
+
         return headx
-    
+
     def click_src(self, butt):
         ttt = self.src_box.get_text()
-        #print "searching ", ttt
+        #print( "searching ", ttt)
         if ttt == "":
             sutil.message("\nPlease specify search string.\n\n", self)
             return
-           
+
         res = [];  self.lstore.clear()
         try:
             res = self.dibadb.getcustnames("%" + ttt + "%")
-            '''print "Listing search res:"
+            '''print( "Listing search res:")
             for aa in res:
-                print aa
-            print "Done,"'''
-            
+                print( aa)
+            print( "Done,")
+            '''
+
         except:
             self.self2.progress("Cannot fetch search results.")
-            print "Cannot fetch name list.", sys.exc_info()
+            print( "Cannot fetch name list.", sys.exc_info())
             pass
-        
+
         if res == []:
             sutil.message("\nNo matcing name for '%s'.\n\n" % ttt, self)
             return
-        
+
         self.fill_data(res)
-        
+
     def click_clear(self, butt):
         self.src_box.set_text("")
-        
+
         res = [];  self.lstore.clear()
         try:
             res = self.dibadb.getcustnames()
-            print "Listing search res:"
+            print( "Listing search res:")
             for aa in res:
-                print aa
-            print "Done,"
-            
+                print( aa)
+            print( "Done,")
+
         except:
             self.self2.progress("Cannot fetch search results.")
-            print "Cannot fetch name list.", sys.exc_info()
+            print( "Cannot fetch name list.", sys.exc_info())
             pass
-        
+
         self.fill_data(res)
-          
+
 # testing ...
 
 def main():
@@ -339,5 +344,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
