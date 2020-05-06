@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -14,7 +14,10 @@ from gi.repository import GLib
 from gi.repository import Pango
 
 import random, time
-import newcust, pysql, sutil, treehand, yellow, custselect
+import newcust, pysql, treehand, yellow, custselect
+
+sys.path.append('../common')
+import sutil
 
 version = 1.0
 verbose = False
@@ -56,7 +59,7 @@ class MainWin():
         #window.set_hands(ic.get_pixbuf())
 
         www, hhh = sutil.get_screen_wh()
-        window.set_default_size(13*www/16, 13*hhh/16)
+        window.set_default_size(15*min(www,hhh)/16, 12*min(www,hhh)/16)
         window.set_events(Gdk.EventMask.ALL_EVENTS_MASK )
 
         window.connect("unmap", self.OnExit)

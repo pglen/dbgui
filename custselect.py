@@ -7,8 +7,11 @@ from __future__ import print_function
 
 import os, sys, getopt, signal, uuid, subprocess
 
-import newcust, pysql, sutil, treehand, yellow
+import newcust, pysql, treehand, yellow
 import custselect
+
+sys.path.append('../common')
+import sutil
 
 '''The GtkListStore is used to store data in list form, to be used
 later on by a GtkTreeView to display it. This demo builds a
@@ -51,7 +54,8 @@ class ListCust(Gtk.Window):
         self.results = ()
 
         www, hhh = sutil.get_screen_wh()
-        self.set_size_request(3*www/4, 3*hhh/4)
+
+        self.set_size_request(3*min(www,hhh)/4, 3*min(www,hhh)/4)
 
         vbox = Gtk.VBox(False, 0)
         self.add(vbox)

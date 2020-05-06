@@ -13,7 +13,10 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 
-import pysql, sutil
+import pysql
+
+sys.path.append('../common')
+import sutil
 
 GAP = 4                     # Gap in pixels
 TABSTOP = 4
