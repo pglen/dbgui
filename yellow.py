@@ -15,7 +15,8 @@ from gi.repository import GLib
 
 import pysql
 
-sys.path.append('../common')
+sys.path.append('../pycommon')
+
 import sutil
 
 GAP = 4                     # Gap in pixels

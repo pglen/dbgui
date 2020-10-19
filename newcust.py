@@ -12,8 +12,10 @@ from gi.repository import GLib
 import random, time
 import treehand, padding
 
-sys.path.append('../common')
-import sutil
+sys.path.append('../pycommon')
+
+import  sutil
+import  pgentry
 
 class NewCust(Gtk.Window):
 
@@ -78,57 +80,56 @@ class NewCust(Gtk.Window):
 
         sg = Gtk.SizeGroup(Gtk.SizeGroupMode.HORIZONTAL)
 
-        tp1 =("Full Name: ", "cname", "Enter full name (TAB to advance)", datax)
-        tp2 = ("Date of birth: ", "dob", "Date of birth, YYYY/MM/DD", datax)
-        lab1, lab2 = self.entryquad(vbox2, tp1, tp2)
+        tp1 =("Full _Name: ", "cname", "Enter full name (TAB to advance)", datax)
+        tp2 = ("Date of _birth: ", "dob", "Date of birth, YYYY/MM/DD", datax)
+        lab1, lab2 = pgentry.entryquad(self.arr, vbox2, tp1, tp2)
         sg.add_widget(lab1);     sg.add_widget(lab2)
 
-        tp3 = ("Location of birth: ", "lob", "Location, City and Country", datax)
+        tp3 = ("_Location of birth: ", "lob", "Location, _City and Country", datax)
         tp4 = ("Numeric ID: ", "numid", "Social Security Number or national ID", datax)
-        lab3, lab4 = self.entryquad(vbox2, tp3, tp4)
+        lab3, lab4 = pgentry.entryquad(self.arr, vbox2, tp3, tp4)
         sg.add_widget(lab3);     sg.add_widget(lab4)
 
-        tp3a = ("Address Line 1: ", "addr1", "Address line one. (Number, Street)", datax)
-        tp4a = ("Address Line 2: ", "addr2", "Addressline two. (if applicable)", datax)
-        lab5, lab6 = self.entryquad(vbox2, tp3a, tp4a)
+        tp3a = ("Add_ress Line 1: ", "addr1", "Address line one. (Number, Street)", datax)
+        tp4a = ("Addre_ss Line 2: ", "addr2", "Addressline two. (if applicable)", datax)
+        lab5, lab6 = pgentry.entryquad(self.arr, vbox2, tp3a, tp4a)
         sg.add_widget(lab5);     sg.add_widget(lab6)
 
-        tp5 = ("City: ", "city", "City or Township", datax)
-        tp6 = ("County / Territory: ", "county", "County or Teritory or Borough", datax)
-        lab7, lab8 = self.entryquad(vbox2, tp5, tp6)
+        tp5 = ("C_ity: ", "city", "City or Township", datax)
+        tp6 = ("County / _Territory: ", "county", "County or Territory or Borough", datax)
+        lab7, lab8 = pgentry.entryquad(self.arr, vbox2, tp5, tp6)
         sg.add_widget(lab7);     sg.add_widget(lab8)
 
-        tp7 = ("Zip: ", "zip", "Zip code or Postal code", datax)
-        tp8 = ("Country: ", "country", "Coutry of residence", datax)
-        lab9, lab10 = self.entryquad(vbox2, tp7, tp8)
+        tp7 = ("_Zip: ", "zip", "Zip code or Postal code", datax)
+        tp8 = ("C_ountry: ", "country", "Coutry of residence", datax)
+        lab9, lab10 = pgentry.entryquad(self.arr, vbox2, tp7, tp8)
         sg.add_widget(lab9);     sg.add_widget(lab10)
 
-        tp7a = ("Phone: ", "phone", "Phone or text number. ", datax)
-        tp8a = ("Email: ", "email", "Primary Email", datax)
-        lab9a, lab10a = self.entryquad(vbox2, tp7a, tp8a)
+        tp7a = ("_Phone: ", "phone", "Phone or text number. ", datax)
+        tp8a = ("_Email: ", "email", "Primary Email", datax)
+        lab9a, lab10a = pgentry.entryquad(self.arr, vbox2, tp7a, tp8a)
         sg.add_widget(lab9a);     sg.add_widget(lab10a)
 
         tp7b = ("Phone: (secondary)", "phone2", "Secondary phone or text number. ", datax)
         tp8b = ("Email: (Secondary)", "email2", "Secondary Email", datax)
-        lab9b, lab10b = self.entryquad(vbox2, tp7b, tp8b)
+        lab9b, lab10b = pgentry.entryquad(self.arr, vbox2, tp7b, tp8b)
         sg.add_widget(lab9b);     sg.add_widget(lab10b)
-
 
         self.vspacer(vbox)
         vbox.pack_start(vbox2, False, 0, 0)
 
         vbox3 = Gtk.VBox();
 
-        lab1a = self.textviewpair(vbox3, "Comments: ", "comments", \
-                "Enter comments. This field could contain additiona data. "
+        lab1a = pgentry.textviewpair(self.arr, vbox3, "_Comments: ", "comments", \
+                "Enter comments. This field can contain additional data. "
                 "   (Ctrl-TAB to advance)", datax)
         sg.add_widget(lab1a)
 
-        lab5 = self.textviewpair(vbox3, "Free Text: ", "freetext", \
-                "Enter free flowing text, relevant to the entry.", datax)
+        lab5 = pgentry.textviewpair(self.arr, vbox3, "_Free Text: ", "freetext", \
+                "Enter _free flowing text, relevant to the entry.", datax)
         sg.add_widget(lab5)
 
-        lab2a = self.textviewpair(vbox3, "Log entry:", "log", \
+        lab2a = pgentry.textviewpair(self.arr, vbox3, "Lo_g entry:", "log", \
                 "Enter log entry. (Append at end, keep old entries.)", datax)
         sg.add_widget(lab2a)
 
@@ -263,33 +264,6 @@ class NewCust(Gtk.Window):
         #self.vspacer(vbox)
         vbox.pack_start(hbox2, True, True, 0)
         return lab1, lab2
-
-    # Create a label entry pair
-    def entrypair(self, vbox, labtext, labname, tip, defval = None):
-
-        hbox2 = Gtk.HBox()
-        lab1b = Gtk.Label(label="      ")
-        hbox2.pack_start(lab1b, False, 0, 0)
-
-        lab1 = Gtk.Label(label=labtext) ; lab1.set_alignment(1, 0)
-        hbox2.pack_start(lab1, False, 0, 0)
-
-        lab1a = Gtk.Label(label="      ")
-        hbox2.pack_start(lab1a, False, 0, 0)
-
-        headx = Gtk.Entry();
-        if defval != None:
-            headx.set_text(defval[labname])
-        hbox2.pack_start(headx, True, 0, 0)
-        lab3 = Gtk.Label(label="        ")
-        hbox2.pack_start(lab3, False, 0, 0)
-        self.arr.append((labname, headx))
-
-        self.vspacer(vbox)
-        vbox.pack_start(hbox2, False, 0, 0)
-        lab1.set_tooltip_text(tip)
-
-        return lab1
 
     def textviewpair(self, vbox, labtext, labname, tip, defval = None):
 

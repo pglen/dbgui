@@ -16,7 +16,8 @@ from gi.repository import Pango
 import random, time
 import newcust, pysql, treehand, yellow, custselect
 
-sys.path.append('../common')
+sys.path.append('../pycommon')
+
 import sutil
 
 version = 1.0
@@ -28,7 +29,7 @@ verbose = False
 # The production code will put it somwhere else
 dataroot = os.getcwd()
 
-#print "datatroot", dataroot
+#print( "datatroot", dataroot)
 
 data_dir        = dataroot + "/data/customers/"
 #key_dir         = dataroot + "/data/customers/keys/"
@@ -51,7 +52,7 @@ class MainWin():
 
         self.timerx = 0
         self.serial = ""
-        self.window = window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
+        self.window = window = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
         window.set_title("DBGui Main Screen")
         window.set_position(Gtk.WindowPosition.CENTER)
 
@@ -71,7 +72,7 @@ class MainWin():
         except:
             pass
 
-        GObject.timeout_add(1000, self.handler_tick)
+        GLib.timeout_add(1000, self.handler_tick)
 
         #yellow.stickWin(window, "hello", "Want")
 
@@ -146,12 +147,12 @@ class MainWin():
         #attr2.insert(Pango.AttrSize(20000, 0, -1))
         #self.activity.set_attributes(attr2)
 
-        vbox2.pack_start(Gtk.Label(" "), True, True, 0)
+        vbox2.pack_start(Gtk.Label(label=" "), True, True, 0)
         vbox2.pack_start(self.account, False, 0, 0)
         vbox2.pack_start(hbox, False, 0, 0)
         vbox2.pack_start(hbox3, False, 0, 0)
         vbox2.pack_start(self.activity, False, 0, 0)
-        vbox2.pack_start(Gtk.Label(" "), True, True, 0)
+        vbox2.pack_start(Gtk.Label(label=" "), True, True, 0)
 
         self.progress("DIBA: Done init")
 
@@ -171,15 +172,15 @@ class MainWin():
         butt1d = Gtk.Button.new_with_mnemonic(txt)
         butt1d.connect("clicked", func, win)
 
-        vbb.pack_start(Gtk.Label(" "), True, True, 0)
+        vbb.pack_start(Gtk.Label(label=" "), True, True, 0)
         vbb.pack_start(ic2, False, 0, 0)
-        vbb.pack_start(Gtk.Label(" "), True, True, 0)
+        vbb.pack_start(Gtk.Label(label=" "), True, True, 0)
         vbb.pack_start(butt1d, False, 0, 0)
-        vbb.pack_start(Gtk.Label(" "), True, True, 0)
+        vbb.pack_start(Gtk.Label(label=" "), True, True, 0)
 
-        hbb.pack_start(Gtk.Label("  "), True, True, 0)
+        hbb.pack_start(Gtk.Label(label="  "), True, True, 0)
         hbb.pack_start(vbb, True, True, 0)
-        hbb.pack_start(Gtk.Label("  "), True, True, 0)
+        hbb.pack_start(Gtk.Label(label="  "), True, True, 0)
 
         return hbb
 
@@ -355,7 +356,7 @@ class MainWin():
             self.timerx -= 1
         if self.timerx == 1:
             self.activity.set_text("DBGui Idle")
-        GObject.timeout_add(1000, self.handler_tick)
+        GLib.timeout_add(1000, self.handler_tick)
 
 def key_press_event(win, aa):
     print( "key_press_event", win, aa)
