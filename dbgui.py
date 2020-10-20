@@ -85,8 +85,9 @@ class MainWin():
         notebook.connect("switch-page", self.note_swpage_cb)
         notebook.connect("focus-in-event", self.note_focus_in)
 
-        vbox = Gtk.VBox();   vbox2 = Gtk.VBox()
-        hbox = Gtk.HBox();   hbox2 = Gtk.HBox()
+        vbox = Gtk.VBox();    vbox2 = Gtk.VBox()
+        vbox3 = Gtk.VBox();   vbox4 = Gtk.VBox()
+        hbox = Gtk.HBox();    hbox2 = Gtk.HBox()
 
         self.tree = treehand.TreeHand(self.tree_sel_row)
         hbox2.pack_start(self.tree.stree, True, True, 0)
@@ -154,13 +155,34 @@ class MainWin():
         vbox2.pack_start(self.activity, False, 0, 0)
         vbox2.pack_start(Gtk.Label(label=" "), True, True, 0)
 
+        vbox3.pack_start(Gtk.Label(label=" Cal "), True, True, 0)
+
+        vbox4.pack_start(Gtk.Label(label=" Reports "), True, True, 0)
+
         self.progress("DIBA: Done init")
 
         notebook.append_page(vbox2)
         notebook.set_tab_label(vbox2, Gtk.Label(label="  Main  "));
+
         notebook.append_page(vbox)
         notebook.set_tab_label(vbox, Gtk.Label(label="  Monitor  "));
+
+        notebook.append_page(vbox3)
+        notebook.set_tab_label(vbox3, Gtk.Label(label="  Calendar  "));
+
+        notebook.append_page(vbox4)
+        notebook.set_tab_label(vbox4, Gtk.Label(label="  Reports  "));
+
+        vbox5 = Gtk.VBox()
+        vbox5.pack_start(Gtk.Label(label=" Admin "), True, True, 0)
+        notebook.append_page(vbox5)
+        notebook.set_tab_label(vbox5, Gtk.Label(label="  Admin  "));
+
         window.add(notebook)
+
+
+
+
 
     def imgbutt(self, imgfile, txt, func, win):
         hbb = Gtk.HBox(); vbb = Gtk.VBox();  ic = Gtk.Image();

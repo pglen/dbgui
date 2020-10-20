@@ -65,14 +65,14 @@ class stickDoc(Gtk.DrawingArea):
         GObject.GObject.__init__(self)
         #self.set_flags(Gtk.CAN_FOCUS | Gtk.CAN_DEFAULT| Gtk.SENSITIVE | Gtk.PARENT_SENSITIVE)
         #self.set_flags(Gtk.CAN_FOCUS | Gtk.SENSITIVE)
-        self.set_flags(Gtk.SENSITIVE)
+        #self.set_flags(Gtk.SENSITIVE)
 
         self.set_events(Gdk.EventMask.ALL_EVENTS_MASK )
 
-        self.colormap = Gtk.widget_get_default_colormap()
+        '''self.colormap = Gtk.widget_get_default_colormap()
         self.fgcolor  = self.colormap.alloc_color(FGCOLOR)
         self.bgcolor  = self.colormap.alloc_color(BGCOLOR)
-        self.frcolor  = self.colormap.alloc_color(FRCOLOR)
+        self.frcolor  = self.colormap.alloc_color(FRCOLOR)'''
 
         self.modify_bg(Gtk.StateType.NORMAL, self.bgcolor)
         self.pangolayout = self.create_pango_layout("a")
@@ -243,7 +243,7 @@ class stickWin():
         #window.connect("destroy", self.OnExit)
         #window.connect("event", self.OnExit)
 
-        window.set_flags(Gtk.SENSITIVE)
+        #window.set_flags(Gtk.SENSITIVE)
         #window.set_flags(Gtk.CAN_FOCUS | Gtk.SENSITIVE)
         #window.set_flags(Gtk.CAN_FOCUS | Gtk.CAN_DEFAULT| Gtk.SENSITIVE | Gtk.PARENT_SENSITIVE)
         window.set_destroy_with_parent(True )
