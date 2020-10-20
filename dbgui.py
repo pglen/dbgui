@@ -19,6 +19,7 @@ import newcust, pysql, treehand, yellow, custselect
 sys.path.append('../pycommon')
 
 import sutil
+import pgentry
 
 version = 1.0
 verbose = False
@@ -98,19 +99,19 @@ class MainWin():
         vbox.pack_start(hbox2, True, True, 0)
         lab2 = Gtk.Label(label="");  hbox.pack_start(lab2, True, 0, 0)
 
-        ib2 = self.imgbutt("images/person.png", " Ne_w Client ", self.new_account, window)
+        ib2 = pgentry.imgbutt("images/person.png", " Ne_w Client ", self.new_account, window)
         hbox.pack_start(ib2, False, 0, 0)
 
-        ib2 = self.imgbutt("images/select.png", " Selec_t Client ", self.sel_account, window)
+        ib2 = pgentry.imgbutt("images/select.png", " Selec_t Client ", self.sel_account, window)
         hbox.pack_start(ib2, False, 0, 0)
 
-        ib2 = self.imgbutt("images/person3.png", " _Edit Client ", self.ed_account, window)
+        ib2 = pgentry.imgbutt("images/person3.png", " _Edit Client ", self.ed_account, window)
         hbox.pack_start(ib2, False, 0, 0)
 
-        ib2 = self.imgbutt("images/search.png", " _Search ", self.search, window)
+        ib2 = pgentry.imgbutt("images/search.png", " _Search ", self.search, window)
         hbox.pack_start(ib2, False, 0, 0)
 
-        ib2 = self.imgbutt("images/transact.png", " Show T_ransactions ", self.transact, window)
+        ib2 = pgentry.imgbutt("images/transact.png", " Show T_ransactions ", self.transact, window)
         hbox.pack_start(ib2, False, 0, 0)
 
         lab2e = Gtk.Label(label="");  hbox.pack_start(lab2e, True, 0, 0)
@@ -118,22 +119,22 @@ class MainWin():
         hbox3 = Gtk.HBox()
         lab3 = Gtk.Label(label="");  hbox3.pack_start(lab3, True, 0, 0)
 
-        ib2 = self.imgbutt("images/person2.png", "  _Delete Client  ", self.del_client, window)
+        ib2 = pgentry.imgbutt("images/person2.png", "  _Delete Client  ", self.del_client, window)
         hbox3.pack_start(ib2, False, 0, 0)
 
-        ib2 = self.imgbutt("images/hands.png", "  H_ide One  ", self.hide_one, window)
+        ib2 = pgentry.imgbutt("images/hands.png", "  H_ide One  ", self.hide_one, window)
         hbox3.pack_start(ib2, False, 0, 0)
 
-        #ib2 = self.imgbutt("images/hands.png", "  _Delete One   ", self.del_one, window)
+        #ib2 = pgentry.imgbutt("images/hands.png", "  _Delete One   ", self.del_one, window)
         #hbox3.pack_start(ib2, False, 0, 0)
 
-        ib2 = self.imgbutt("images/hands.png", "  Hide _Main  ", self.hide_main, window)
+        ib2 = pgentry.imgbutt("images/hands.png", "  Hide _Main  ", self.hide_main, window)
         hbox3.pack_start(ib2, False, 0, 0)
 
-        ib2 = self.imgbutt("images/summary.png", " Show Summ_ary ", self.show_one, window)
+        ib2 = pgentry.imgbutt("images/summary.png", " Show Summ_ary ", self.show_one, window)
         hbox3.pack_start(ib2, False, 0, 0)
 
-        ib2 = self.imgbutt("images/hands.png", "   E_xit  ", self.exit_all, window)
+        ib2 = pgentry.imgbutt("images/hands.png", "   E_xit  ", self.exit_all, window)
         hbox3.pack_start(ib2, False, 0, 0)
 
         lab4 = Gtk.Label(label="");  hbox3.pack_start(lab4, True, 0, 0)
@@ -152,11 +153,17 @@ class MainWin():
         vbox2.pack_start(self.account, False, 0, 0)
         vbox2.pack_start(hbox, False, 0, 0)
         vbox2.pack_start(hbox3, False, 0, 0)
+
+        hbox4b = Gtk.HBox()
+        hbox4b.pack_start(Gtk.Label(label="  "), True, 0, 0)
+        hbox4b.pack_start(Gtk.Label(label=" 44 "), False, 0, 0)
+        hbox4b.pack_start(Gtk.Label(label="  "), True, 0, 0)
+        vbox2.pack_start(hbox4b, True, True, 0)
+
         vbox2.pack_start(self.activity, False, 0, 0)
-        vbox2.pack_start(Gtk.Label(label=" "), True, True, 0)
+        #vbox2.pack_start(Gtk.Label(label=" a "), True, True, 0)
 
         vbox3.pack_start(Gtk.Label(label=" Cal "), True, True, 0)
-
         vbox4.pack_start(Gtk.Label(label=" Reports "), True, True, 0)
 
         self.progress("DIBA: Done init")
@@ -181,30 +188,6 @@ class MainWin():
         window.add(notebook)
 
 
-
-
-
-    def imgbutt(self, imgfile, txt, func, win):
-        hbb = Gtk.HBox(); vbb = Gtk.VBox();  ic = Gtk.Image();
-        ic.set_from_file(imgfile)
-        pb = ic.get_pixbuf();
-        #pb2 = pb.scale_simple(150, 150, GdkPixbuf.InterpType.BILINEAR)
-        pb2 = pb.scale_simple(150, 150, 0)
-        ic2 = Gtk.Image.new_from_pixbuf(pb2)
-        butt1d = Gtk.Button.new_with_mnemonic(txt)
-        butt1d.connect("clicked", func, win)
-
-        vbb.pack_start(Gtk.Label(label=" "), True, True, 0)
-        vbb.pack_start(ic2, False, 0, 0)
-        vbb.pack_start(Gtk.Label(label=" "), True, True, 0)
-        vbb.pack_start(butt1d, False, 0, 0)
-        vbb.pack_start(Gtk.Label(label=" "), True, True, 0)
-
-        hbb.pack_start(Gtk.Label(label="  "), True, True, 0)
-        hbb.pack_start(vbb, True, True, 0)
-        hbb.pack_start(Gtk.Label(label="  "), True, True, 0)
-
-        return hbb
 
     def exit_all(self, area = None, win = None):
         #print( "exit_all")
