@@ -19,7 +19,7 @@ import newcust, pysql, treehand, yellow, custselect
 sys.path.append('../pycommon')
 
 import sutil
-import pgentry
+import pgentry, pgbox
 
 version = 1.0
 verbose = False
@@ -86,56 +86,9 @@ class MainWin():
         notebook.connect("switch-page", self.note_swpage_cb)
         notebook.connect("focus-in-event", self.note_focus_in)
 
-        vbox = Gtk.VBox();    vbox2 = Gtk.VBox()
-        vbox3 = Gtk.VBox();   vbox4 = Gtk.VBox()
-        hbox = Gtk.HBox();    hbox2 = Gtk.HBox()
 
-        self.tree = treehand.TreeHand(self.tree_sel_row)
-        hbox2.pack_start(self.tree.stree, True, True, 0)
-
-        self.txt1 = Gtk.Label(label="None")
-        hbox2.pack_start(self.txt1, True, True, 0)
-
-        vbox.pack_start(hbox2, True, True, 0)
-        lab2 = Gtk.Label(label="");  hbox.pack_start(lab2, True, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/person.png", " Ne_w Client ", self.new_account, window)
-        hbox.pack_start(ib2, False, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/select.png", " Selec_t Client ", self.sel_account, window)
-        hbox.pack_start(ib2, False, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/person3.png", " _Edit Client ", self.ed_account, window)
-        hbox.pack_start(ib2, False, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/search.png", " _Search ", self.search, window)
-        hbox.pack_start(ib2, False, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/transact.png", " Show T_ransactions ", self.transact, window)
-        hbox.pack_start(ib2, False, 0, 0)
-
-        lab2e = Gtk.Label(label="");  hbox.pack_start(lab2e, True, 0, 0)
-
-        hbox3 = Gtk.HBox()
-        lab3 = Gtk.Label(label="");  hbox3.pack_start(lab3, True, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/person2.png", "  _Delete Client  ", self.del_client, window)
-        hbox3.pack_start(ib2, False, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/hands.png", "  H_ide One  ", self.hide_one, window)
-        hbox3.pack_start(ib2, False, 0, 0)
-
-        #ib2 = pgentry.imgbutt("images/hands.png", "  _Delete One   ", self.del_one, window)
-        #hbox3.pack_start(ib2, False, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/hands.png", "  Hide _Main  ", self.hide_main, window)
-        hbox3.pack_start(ib2, False, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/summary.png", " Show Summ_ary ", self.show_one, window)
-        hbox3.pack_start(ib2, False, 0, 0)
-
-        ib2 = pgentry.imgbutt("images/hands.png", "   E_xit  ", self.exit_all, window)
-        hbox3.pack_start(ib2, False, 0, 0)
+        hbox = self.mainline()
+        hbox3 = self.mainline_two()
 
         lab4 = Gtk.Label(label="");  hbox3.pack_start(lab4, True, 0, 0)
         self.account = Gtk.Label(label="DBGui: No client selected");
@@ -149,34 +102,25 @@ class MainWin():
         #attr2.insert(Pango.AttrSize(20000, 0, -1))
         #self.activity.set_attributes(attr2)
 
-        vbox2.pack_start(Gtk.Label(label=" "), True, True, 0)
-        vbox2.pack_start(self.account, False, 0, 0)
-        vbox2.pack_start(hbox, False, 0, 0)
-        vbox2.pack_start(hbox3, False, 0, 0)
 
-        hbox4b = Gtk.HBox()
-        hbox4b.pack_start(Gtk.Label(label="  "), True, 0, 0)
-        hbox4b.pack_start(Gtk.Label(label=" 44 "), False, 0, 0)
-        hbox4b.pack_start(Gtk.Label(label="  "), True, 0, 0)
-        vbox2.pack_start(hbox4b, True, True, 0)
+        self.progress("DBGui: Done init")
 
-        vbox2.pack_start(self.activity, False, 0, 0)
-        #vbox2.pack_start(Gtk.Label(label=" a "), True, True, 0)
-
-        vbox3.pack_start(Gtk.Label(label=" Cal "), True, True, 0)
-        vbox4.pack_start(Gtk.Label(label=" Reports "), True, True, 0)
-
-        self.progress("DIBA: Done init")
-
+        # Put the notebook together
+        vbox2 = self.mainpage(hbox, hbox3)
         notebook.append_page(vbox2)
         notebook.set_tab_label(vbox2, Gtk.Label(label="  Main  "));
 
+        vbox = self.monpage()
         notebook.append_page(vbox)
         notebook.set_tab_label(vbox, Gtk.Label(label="  Monitor  "));
 
+        vbox3 = Gtk.VBox();
+        vbox3.pack_start(Gtk.Label(label=" Cal "), True, True, 0)
         notebook.append_page(vbox3)
         notebook.set_tab_label(vbox3, Gtk.Label(label="  Calendar  "));
 
+        vbox4 = Gtk.VBox()
+        vbox4.pack_start(Gtk.Label(label=" Reports "), True, True, 0)
         notebook.append_page(vbox4)
         notebook.set_tab_label(vbox4, Gtk.Label(label="  Reports  "));
 
@@ -185,8 +129,104 @@ class MainWin():
         notebook.append_page(vbox5)
         notebook.set_tab_label(vbox5, Gtk.Label(label="  Admin  "));
 
-        window.add(notebook)
+        # Assemble page
 
+        vboxm = Gtk.VBox();  hboxm = Gtk.HBox()
+        hboxm.pack_start(Gtk.Label(label="  "), False, 0, 0)
+        hboxm.pack_start(Gtk.Label(label=" Menu goes here"), False, 0, 0)
+        hboxm.pack_start(Gtk.Label(label="  "), True, 0, 0)
+
+        vboxm.pack_start(pgbox.xSpacer(), False, False, 0)
+        vboxm.pack_start(hboxm, False, False, 0)
+        vboxm.pack_start(pgbox.xSpacer(), False, False, 0)
+        vboxm.pack_start(notebook, True, True, 0)
+
+        vboxm.pack_start(self.activity, False, 0, 0)
+        vboxm.pack_start(pgbox.xSpacer(), False, False, 0)
+
+        window.add(vboxm)
+
+    def monpage(self):
+
+        vbox = Gtk.VBox();
+        hbox2 = Gtk.HBox()
+        self.tree = treehand.TreeHand(self.tree_sel_row)
+        hbox2.pack_start(self.tree.stree, True, True, 0)
+
+        self.txt1 = Gtk.Label(label="None")
+        hbox2.pack_start(self.txt1, True, True, 0)
+
+        vbox.pack_start(hbox2, True, True, 0)
+
+        return vbox
+
+
+    def mainpage(self, hbox, hbox3):
+
+        vbox2 = Gtk.VBox()
+        vbox2.pack_start(Gtk.Label(label=" "), True, True, 0)
+        vbox2.pack_start(self.account, False, 0, 0)
+        vbox2.pack_start(hbox, False, 0, 0)
+        vbox2.pack_start(hbox3, False, 0, 0)
+
+        hbox4b = Gtk.HBox()
+        hbox4b.pack_start(Gtk.Label(label="  "), True, 0, 0)
+        hbox4b.pack_start(Gtk.Label(label="  "), False, 0, 0)
+        hbox4b.pack_start(Gtk.Label(label="  "), True, 0, 0)
+        vbox2.pack_start(hbox4b, True, True, 0)
+
+        return vbox2
+
+
+    def mainline(self):
+
+        hbox = Gtk.HBox();
+        lab3 = Gtk.Label(label="");  hbox.pack_start(lab3, True, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/person.png", " Ne_w Client ", self.new_account, self.window)
+        hbox.pack_start(ib2, False, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/select.png", " Selec_t Client ", self.sel_account, self.window)
+        hbox.pack_start(ib2, False, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/person3.png", " _Edit Client ", self.ed_account, self.window)
+        hbox.pack_start(ib2, False, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/search.png", " _Search ", self.search, self.window)
+        hbox.pack_start(ib2, False, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/transact.png", " Show T_ransactions ", self.transact, self.window)
+        hbox.pack_start(ib2, False, 0, 0)
+
+        lab2e = Gtk.Label(label="");  hbox.pack_start(lab2e, True, 0, 0)
+
+        return hbox
+
+
+    def mainline_two(self):
+
+        hbox3 = Gtk.HBox()
+        lab3 = Gtk.Label(label="");  hbox3.pack_start(lab3, True, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/person2.png", "  _Delete Client  ", self.del_client, self.window)
+        hbox3.pack_start(ib2, False, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/hands.png", "  H_ide One  ", self.hide_one, self.window)
+        hbox3.pack_start(ib2, False, 0, 0)
+
+        #ib2 = pgentry.imgbutt("images/hands.png", "  _Delete One   ", self.del_one, self.window)
+        #hbox3.pack_start(ib2, False, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/hands.png", "  Hide _Main  ", self.hide_main, self.window)
+        hbox3.pack_start(ib2, False, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/summary.png", " Show Summ_ary ", self.show_one, self.window)
+        hbox3.pack_start(ib2, False, 0, 0)
+
+        ib2 = pgentry.imgbutt("images/hands.png", "   E_xit  ", self.exit_all, self.window)
+        hbox3.pack_start(ib2, False, 0, 0)
+
+        return hbox3
 
 
     def exit_all(self, area = None, win = None):
