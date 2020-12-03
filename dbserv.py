@@ -4,6 +4,8 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import os, sys, getopt, signal, uuid, subprocess
+import socketserver, socket
+import random, time
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -13,15 +15,14 @@ from gi.repository import GObject
 from gi.repository import GLib
 from gi.repository import Pango
 
-import random, time
 import newcust, pysql, treehand, yellow, custselect
 
 sys.path.append('../pycommon')
+import sutil, pgentry, pgbox
 
-import sutil
-import pgentry, pgbox
-
-import socketserver, socket
+sys.path.append('../pyvserv/common')
+import pypacker
+packer = pypacker.packbin()
 
 class MyUDPHandler(socketserver.BaseRequestHandler):
     """
@@ -36,22 +37,56 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         pass
 
     def handle(self):
+        global myip
+
         data = self.request[0].strip()
+
         socket = self.request[1]
-        print("{} wrote:".format(self.client_address[0]))
-        print(data)
-        socket.sendto(data.upper(), self.client_address)
+        print("{} wrote: '{}'".format(self.client_address[0], data) )
+        #print(data)
+        ddd = "{} -> {} -- {}".format(self.client_address[0], myip, data.upper() )
+        ppp = packer.encode_data("", [self.client_address[0], myip, data.upper()])
+
+        socket.sendto(bytes(ppp, "cp437"), self.client_address)
+
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
 
 # ------------------------------------------------------------------------
 # Start of program:
 
 if __name__ == '__main__':
 
+    global myip
+
     print("Py db net server");
+
+    hname = socket.gethostname()
+    print("hostname",  hname)
+
+    #hinf = socket.getaddrinfo(hname, 80) #, proto=socket.IPPROTO_TCP)
+    #print("hinf", hinf)
+    #print("hinf[] '{}' ".format(hinf[0][4][0]))
+
+    myip = get_ip()
+
+    print("my ip", myip)
+
     #HOST, PORT = "localhost", 7777
     HOST, PORT = "", 7777
     with socketserver.UDPServer((HOST, PORT), MyUDPHandler) as server:
         server.serve_forever()
+
 
     # Fallback
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
