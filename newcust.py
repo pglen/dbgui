@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, getopt, signal, time
+import os, sys, getopt, signal, time, datetime
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -67,10 +67,12 @@ class NewCust(Gtk.Window):
             pass
 
         self.arr.append(("custid", str(uuid_name)))
-        if datax == None:
-            self.arr.append(("cdate", time.asctime()))
+        ddd = datetime.datetime.isoformat(datetime.datetime.now())
 
-        self.arr.append(("udate", time.asctime()))
+        if datax == None:
+            self.arr.append(("cdate", ddd))
+
+        self.arr.append(("udate", ddd))
 
         # We use gobj instead of SIGALRM, so it is more multi platform
         #GObject.timeout_add(1000, self.handler_tick)
@@ -136,6 +138,9 @@ class NewCust(Gtk.Window):
         vbox.pack_start(vbox3, False, 0, 0)
         self.vspacer(vbox, expand = True)
 
+        self.arr.append(("cdate2", time.time()))
+        self.arr.append(("udate2", time.time()))
+
         # Draw buttons
         hbox = Gtk.HBox()
 
@@ -155,14 +160,14 @@ class NewCust(Gtk.Window):
         lab2 = Gtk.Label(label="     ")
         hbox.pack_start(lab2, False, 0, 0)
 
-        butt1 = Gtk.Button.new_with_mnemonic("     _OK      ")
-        butt1.connect("clicked", self.click_ok, self)
-        hbox.pack_start(butt1, False, 0, 0)
-        self.spacer(hbox)
-
         butt2 = Gtk.Button.new_with_mnemonic("    _Cancel    ")
         butt2.connect("clicked", self.click_can, self)
         hbox.pack_start(butt2, False, 0, 0)
+        self.spacer(hbox)
+
+        butt1 = Gtk.Button.new_with_mnemonic("     _OK      ")
+        butt1.connect("clicked", self.click_ok, self)
+        hbox.pack_start(butt1, False, 0, 0)
         self.spacer(hbox)
 
         self.vspacer(vbox)

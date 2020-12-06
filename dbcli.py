@@ -81,17 +81,17 @@ class PeerData():
         print("Dec", dec)
         return dec
 
-
 # ------------------------------------------------------------------------
 # Start of program:
 
 if __name__ == '__main__':
 
     if len(sys.argv) == 1:
-        print("Use: dbcli.py str")
-        sys.exit(0)
-
-    data = " ".join(sys.argv[1:])
+        #print("Use: dbcli.py str")
+        #sys.exit(0)
+        data = "hello"
+    else:
+        data = " ".join(sys.argv[1:])
 
     pl = PeerList(data)
     allcli = pl.getlist()
@@ -101,5 +101,7 @@ if __name__ == '__main__':
     dibadb = pysql.dibasql(pysql.data_dir + "/data.mysql")
     pd = PeerData(dibadb)
     ddd = pd.getdata( "count", allcli[0], 7778)
+
+    #pypacker.pgdebug = 1
     lll = pd.getdata( "last", allcli[0], 7778)
 

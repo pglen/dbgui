@@ -96,7 +96,6 @@ class MainWin():
         #attr2.insert(Pango.AttrSize(20000, 0, -1))
         #self.activity.set_attributes(attr2)
 
-
         self.progress("DBGui: Done init")
 
         # Put the notebook together
@@ -453,11 +452,11 @@ if __name__ == '__main__':
 
     #  Preconditions
     try:
-        softmkdir(data_dir)
-        #softmkdir(key_dir)
-        #softmkdir(currency_dir)
-        softmkdir(blockchain_dir)
-        softmkdir(audit_dir)
+        softmkdir(pysql.data_dir)
+        softmkdir(pysql.audit_dir)
+        #softmkdir(pysql.key_dir)
+        #softmkdir(pysql.currency_dir)
+        #softmkdir(pysql.blockchain_dir)
     except:
         print( "Cannot make dir", sys.exc_info())
         sys.exit(2)
@@ -470,7 +469,9 @@ if __name__ == '__main__':
         print( "Cannot write to data dir:", pysql.data_dir)
         sys.exit(4)
 
-    dibadb = pysql.dibasql(pysql.data_dir + "/data.mysql")
+    dbname = pysql.data_dir + "/data.mysql"
+    dibadb = pysql.dibasql(dbname)
+    print("Using file:", dbname)
 
     opts = []; args = []
     try:

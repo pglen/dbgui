@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os, time, uuid, sqlite3
+import sys, os, time, uuid, sqlite3, datetime
 
 # The production code will put it somwhere else
 dataroot = os.getcwd()
@@ -20,7 +20,7 @@ audit_dir       = os.path.realpath(dataroot + "/data/audit/")
 
 fields = ['lob',  'city', 'cname', 'zip', 'freetext', 'dob',
         'country', 'numid', 'email2', 'county', 'phone', 'addr2',
-        'comments', 'addr1', 'phone2', 'email', 'log', 'custid', 'cdate', 'udate' ]
+        'comments', 'addr1', 'phone2', 'email', 'log', 'custid', 'cdate', 'udate', 'cdate2', 'udate2' ]
 
 # 'lob',
 # 'dob',
@@ -134,11 +134,12 @@ class dibasql():
     def   put(self, datax):
 
         #got_clock = time.clock()
-        #print( "datax", datax)
+        print( "pysql put() datax", datax)
+
         sqlstr = ""
         ret = True
         try:
-            self.c.execute("select * from clients where custid == ?", (datax['custid'], ))
+            self.c.execute("select * from clients where custid == ? limit 1", (datax['custid'], ))
             rr = self.c.fetchall()
             if rr == []:
                 entryid = uuid.uuid4()
@@ -159,7 +160,7 @@ class dibasql():
                      strx = datax[aa]
                      arr.append(strx)
 
-                #print( "sql str", sqlstr, "arr", arr)
+                print( "sql str", sqlstr, "arr", arr)
                 self.c.execute(sqlstr, arr)
             else:
                 #print( "updating")
@@ -168,7 +169,7 @@ class dibasql():
                      sqlstr += aa + " = '" + datax[aa] + "', "
                 sqlstr = sqlstr[:-2]
                 sqlstr += " where custid = '" + datax['custid'] + "'"
-                #print( "sql str:", sqlstr)
+                print( "sql str:", sqlstr)
                 self.c.execute(sqlstr)
 
             self.conn.commit()
@@ -298,6 +299,26 @@ class dibasql():
             pass
         return rr
 
+    def   getsince(self, begdate, limit = 10):
+        rr = []
+
+        # This may be locale dependent ; should be OK as the SQL will output
+        # locale dependent str as well
+        # template date: 'Sun Dec  6 09:54:07 2020'
+        ddd = datetime.datetime.strptime(begdate, "%a %b %d %H:%M:%S %Y")
+        print("begdate", begdate, ddd)
+        try:
+            self.c.execute(
+                "select udate, custid from clients where udate > ? order by udate limit ?",
+                    (begdate, limit))
+            rr = self.c.fetchall()
+        except:
+            print( "getdates: Cannot get names list", sys.exc_info() )
+        finally:
+            #c.close
+            pass
+        return rr
+
     # --------------------------------------------------------------------
     # Return None if no data deleted
 
@@ -342,11 +363,13 @@ if __name__ == '__main__':
     dibadb = dibasql(dbfile)
 
     #print (dibadb.getcount())
-    #print (dibadb.getall())
-    print(dibadb.getlast())
+    print (dibadb.getall())
+    #print(dibadb.getlast())
     #print(dibadb.getdates())
     #print(dibadb.getnames())
     #print(dibadb.getids())
 
+    ddd = 'Sun Oct 28 15:39:57 2018'
+    print(dibadb.getsince(ddd) )
 
 # EOF

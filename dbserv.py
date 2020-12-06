@@ -53,7 +53,9 @@ class BroadUDPHandler(socketserver.BaseRequestHandler):
         if pgdebug > 1:
             print("{} wrote: '{}'".format(self.client_address[0], data) )
             #print(data)
+        print("BroadUDPHandler Got", data);
         ddd = "{} -> {} -- {}".format(self.client_address[0], get_myip(), data.upper() )
+        #pypacker.pgdebug = 2
         ppp = packer.encode_data("", self.client_address[0], get_myip(), data.upper())
         socket.sendto(bytes(ppp, "cp437"), self.client_address)
 
@@ -90,11 +92,11 @@ class RespUDPHandler(socketserver.BaseRequestHandler):
             reply = "OK", "Hello acknowledged."
         elif data == b"count":
             dibadb = pysql.dibasql(self.getdbname())
-            reply = "OK", "Count reply", dibadb.getcount()
+            reply = "OK", "Count reply", str(dibadb.getcount())
             del dibadb
         elif data == b"last":
             dibadb = pysql.dibasql(self.getdbname())
-            reply = "OK", "Last reply", dibadb.getlast()
+            reply = "OK", "Last reply", str(dibadb.getlast())
             del dibadb
         else:
             reply = "Hell No"
