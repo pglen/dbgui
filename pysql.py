@@ -2,6 +2,18 @@
 
 import sys, os, time, uuid, sqlite3
 
+# The production code will put it somwhere else
+dataroot = os.getcwd()
+
+#print( "datatroot", dataroot)
+
+data_dir        = os.path.realpath(dataroot + "/data/customers/")
+audit_dir       = os.path.realpath(dataroot + "/data/audit/")
+
+#blockchain_dir  = dataroot + "/data/blockchain/"
+#key_dir         = dataroot + "/data/customers/keys/"
+#currency_dir    = dataroot + "/data/currency/"
+
 # Store data for the DIBA bank
 
 # Fields in no particular order
@@ -226,6 +238,66 @@ class dibasql():
             pass
         return rr, ss
 
+    def   getcount(self):
+        rr = []
+        try:
+            self.c.execute("select count(*) from clients")
+            rr = self.c.fetchall()
+        except:
+            print( "getcount: Cannot get sql count", sys.exc_info() )
+        finally:
+            #c.close
+            pass
+        return rr[0][0]
+
+    def   getlast(self):
+        rr = []
+        try:
+            self.c.execute("select udate from clients order by udate desc limit 1")
+            rr = self.c.fetchall()
+        except:
+            print( "getlast: Cannot get last entry count", sys.exc_info() )
+        finally:
+            #c.close
+            pass
+        return rr[0][0]
+
+    def   getdates(self):
+        rr = []
+        try:
+            self.c.execute("select cname, udate from clients order by udate desc")
+            rr = self.c.fetchall()
+        except:
+            print( "getdates: Cannot get dates list", sys.exc_info() )
+        finally:
+            #c.close
+            pass
+        return rr
+
+    def   getnames(self):
+        rr = []
+        try:
+            self.c.execute("select cname from clients order by cname asc")
+            rr = self.c.fetchall()
+        except:
+            print( "getdates: Cannot get names list", sys.exc_info() )
+        finally:
+            #c.close
+            pass
+        return rr
+
+    def   getids(self):
+        rr = []
+        try:
+            self.c.execute("select custid from clients")
+            rr = self.c.fetchall()
+        except:
+            print( "getdates: Cannot get names list", sys.exc_info() )
+        finally:
+            #c.close
+            pass
+        return rr
+
     # --------------------------------------------------------------------
     # Return None if no data deleted
 
@@ -262,32 +334,19 @@ class dibasql():
             return None
 
 
+if __name__ == '__main__':
+
+    dbfile = data_dir + "/data.mysql"
+    if not os.path.isfile(dbfile):
+        raise ValueError("No db file", dbfile)
+    dibadb = dibasql(dbfile)
+
+    #print (dibadb.getcount())
+    #print (dibadb.getall())
+    print(dibadb.getlast())
+    #print(dibadb.getdates())
+    #print(dibadb.getnames())
+    #print(dibadb.getids())
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# EOF

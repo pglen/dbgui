@@ -32,12 +32,6 @@ dataroot = os.getcwd()
 
 #print( "datatroot", dataroot)
 
-data_dir        = dataroot + "/data/customers/"
-#key_dir         = dataroot + "/data/customers/keys/"
-#currency_dir    = dataroot + "/data/currency/"
-blockchain_dir  = dataroot + "/data/blockchain/"
-audit_dir       = dataroot + "/data/audit/"
-
 def showgtk():
     pprint(Gtk.__dict__)
 
@@ -469,14 +463,14 @@ if __name__ == '__main__':
         sys.exit(2)
 
     # Let the user know it needs fixin'
-    if not os.path.isdir(data_dir):
+    if not os.path.isdir(pysql.data_dir):
         print( "Cannot access data dir:", data_dir)
         sys.exit(3)
-    if not os.access(data_dir, os.W_OK):
-        print( "Cannot write to data dir:", data_dir)
+    if not os.access(pysql.data_dir, os.W_OK):
+        print( "Cannot write to data dir:", pysql.data_dir)
         sys.exit(4)
 
-    dibadb = pysql.dibasql(data_dir + "/data.mysql")
+    dibadb = pysql.dibasql(pysql.data_dir + "/data.mysql")
 
     opts = []; args = []
     try:
