@@ -1,4 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
+from __future__ import absolute_import
+from __future__ import print_function
+
+'''
+
+ Database that can be polled remotely.
+
+
+'''
+
 
 import sys, os, time, uuid, sqlite3, datetime
 
@@ -143,7 +154,7 @@ class dibasql():
             rr = self.c.fetchall()
             if rr == []:
                 entryid = uuid.uuid4()
-                print( "inserting", entryid)
+                #print( "inserting", entryid)
                 sqlstr = "insert into clients (entryid, "
                 for aa in datax:
                      sqlstr += aa + ", "
@@ -229,15 +240,15 @@ class dibasql():
     def   getall(self):
         rr = []; ss = []
         try:
-            self.c.execute("select * from clients")
+            self.c.execute("select * from clients limit 100")
             rr = self.c.fetchall()
-            ss = self.c.description
+            #ss = self.c.description
         except:
             print( "getall: Cannot get sql data", sys.exc_info() )
         finally:
             #c.close
             pass
-        return rr, ss
+        return rr #, ss
 
     def   getcount(self):
         rr = []
@@ -254,7 +265,19 @@ class dibasql():
     def   getlast(self):
         rr = []
         try:
-            self.c.execute("select udate from clients order by udate desc limit 1")
+            self.c.execute("select udate from clients order by udate2 desc limit 1")
+            rr = self.c.fetchall()
+        except:
+            print( "getlast: Cannot get last entry count", sys.exc_info() )
+        finally:
+            #c.close
+            pass
+        return rr[0][0]
+
+    def   getfirst(self):
+        rr = []
+        try:
+            self.c.execute("select udate from clients order by udate2 asc limit 1")
             rr = self.c.fetchall()
         except:
             print( "getlast: Cannot get last entry count", sys.exc_info() )
@@ -266,7 +289,7 @@ class dibasql():
     def   getdates(self):
         rr = []
         try:
-            self.c.execute("select cname, udate from clients order by udate desc")
+            self.c.execute("select cname, udate from clients order by udate2 desc")
             rr = self.c.fetchall()
         except:
             print( "getdates: Cannot get dates list", sys.exc_info() )
@@ -301,16 +324,19 @@ class dibasql():
 
     def   getsince(self, begdate, limit = 10):
         rr = []
-
         # This may be locale dependent ; should be OK as the SQL will output
         # locale dependent str as well
-        # template date: 'Sun Dec  6 09:54:07 2020'
-        ddd = datetime.datetime.strptime(begdate, "%a %b %d %H:%M:%S %Y")
-        print("begdate", begdate, ddd)
+
+        if type(begdate) == str:
+            begdate2 = datetime.datetime.fromisoformat(begdate)
+        else:
+            begdate2 = begdate
+        tstamp = begdate2.timestamp()
+
         try:
             self.c.execute(
-                "select udate, custid from clients where udate > ? order by udate limit ?",
-                    (begdate, limit))
+                "select udate, custid from clients where udate2 > ? order by udate limit ?",
+                    (tstamp, limit))
             rr = self.c.fetchall()
         except:
             print( "getdates: Cannot get names list", sys.exc_info() )
@@ -354,6 +380,24 @@ class dibasql():
         else:
             return None
 
+def xjoinlen(rr):
+    lenx = 0
+    for aa in rr:
+        lenx += len(str(aa))
+    return lenx
+
+def xjoin(rr):
+    strx = ""
+    for aa in rr:
+        strx += str(aa)
+    return strx
+
+def printrec(rec):
+
+    for aa in rec:
+        print(aa)
+        if xjoinlen(aa) > 70:
+            print()
 
 if __name__ == '__main__':
 
@@ -363,13 +407,29 @@ if __name__ == '__main__':
     dibadb = dibasql(dbfile)
 
     #print (dibadb.getcount())
-    print (dibadb.getall())
-    #print(dibadb.getlast())
+    #print(dibadb.getall())
+    print(dibadb.getfirst())
+    print(dibadb.getlast())
     #print(dibadb.getdates())
     #print(dibadb.getnames())
     #print(dibadb.getids())
+    #printrec(dibadb.getall())
+    #printrec(dibadb.getsince("2020-12-06T11:36:01.003855"))
 
-    ddd = 'Sun Oct 28 15:39:57 2018'
-    print(dibadb.getsince(ddd) )
+    # iter all
+    first = dibadb.getfirst()
+    lastr = dibadb.getlast()
+    nextr = dibadb.getsince(first, 2)
+    print("Iter", nextr[0])
+    while True:
+        nextr2 = dibadb.getsince(nextr[1][0], 2)
+        print("Iter", nextr2[0]);
+        if nextr2[0][0] == lastr:
+            break
+        if not len(nextr2):
+            break
+        nextr = nextr2
+        #time.sleep(.2)
+
 
 # EOF

@@ -66,8 +66,10 @@ class NewCust(Gtk.Window):
         except:
             pass
 
+        nownow = datetime.datetime.now()
+
         self.arr.append(("custid", str(uuid_name)))
-        ddd = datetime.datetime.isoformat(datetime.datetime.now())
+        ddd = datetime.datetime.isoformat(nownow)
 
         if datax == None:
             self.arr.append(("cdate", ddd))
@@ -138,8 +140,8 @@ class NewCust(Gtk.Window):
         vbox.pack_start(vbox3, False, 0, 0)
         self.vspacer(vbox, expand = True)
 
-        self.arr.append(("cdate2", time.time()))
-        self.arr.append(("udate2", time.time()))
+        self.arr.append(("cdate2", nownow.timestamp()))
+        self.arr.append(("udate2", nownow.timestamp()))
 
         # Draw buttons
         hbox = Gtk.HBox()
