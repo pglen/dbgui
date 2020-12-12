@@ -97,6 +97,9 @@ if __name__ == '__main__':
     allcli = pl.getlist()
 
     print("Current peer list:", allcli)
+    if len(allcli) == 0:
+        print("No peers")
+        sys.exit(0)
 
     dibadb = pysql.dibasql(pysql.data_dir + "/data.mysql")
     pd = PeerData(dibadb)

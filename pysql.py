@@ -31,7 +31,9 @@ audit_dir       = os.path.realpath(dataroot + "/data/audit/")
 
 fields = ['lob',  'city', 'cname', 'zip', 'freetext', 'dob',
         'country', 'numid', 'email2', 'county', 'phone', 'addr2',
-        'comments', 'addr1', 'phone2', 'email', 'log', 'custid', 'cdate', 'udate', 'cdate2', 'udate2' ]
+        'comments', 'addr1', 'phone2', 'email', 'log', 'custid', 'cdate', 'udate', ]
+
+fields2 = [ 'cdate2', 'udate2' ]
 
 # 'lob',
 # 'dob',
@@ -74,6 +76,9 @@ class dibasql():
                 (pri INTEGER PRIMARY KEY, entryid string"
             for aa in fields:
                 sqlstr += ", " + aa + " text"
+
+            for aa in fields2:
+                sqlstr += ", " + aa + " float"
 
             sqlstr +=  ")"
 
@@ -265,31 +270,31 @@ class dibasql():
     def   getlast(self):
         rr = []
         try:
-            self.c.execute("select udate from clients order by udate2 desc limit 1")
+            self.c.execute("select udate, custid from clients order by udate2 desc limit 1")
             rr = self.c.fetchall()
         except:
             print( "getlast: Cannot get last entry count", sys.exc_info() )
         finally:
             #c.close
             pass
-        return rr[0][0]
+        return rr[0]
 
     def   getfirst(self):
         rr = []
         try:
-            self.c.execute("select udate from clients order by udate2 asc limit 1")
+            self.c.execute("select udate, custid from clients order by udate2 asc limit 1")
             rr = self.c.fetchall()
         except:
             print( "getlast: Cannot get last entry count", sys.exc_info() )
         finally:
             #c.close
             pass
-        return rr[0][0]
+        return rr[0]
 
     def   getdates(self):
         rr = []
         try:
-            self.c.execute("select cname, udate from clients order by udate2 desc")
+            self.c.execute("select udate, custid from clients order by udate2 ")
             rr = self.c.fetchall()
         except:
             print( "getdates: Cannot get dates list", sys.exc_info() )
@@ -322,7 +327,35 @@ class dibasql():
             pass
         return rr
 
-    def   getsince(self, begdate, limit = 10):
+    # This may be locale dependent ; should be OK as the SQL will output
+    # locale dependent str as well
+    # Also, returns the matching
+
+    def   getafter(self, begdate, limit = 10):
+        rr = []
+
+        #print("getafter", begdate)
+
+        if type(begdate) == str:
+            begdate2 = datetime.datetime.fromisoformat(begdate)
+        else:
+            begdate2 = begdate
+        tstamp = round(begdate2.timestamp()) + 0.1   # This is a hack ... needed for next record
+
+        try:
+            self.c.execute(
+                "select udate, custid from clients where udate2 > ?"
+                                    " order by udate2  limit ?",
+                                            (tstamp,  limit))
+            rr = self.c.fetchall()
+        except:
+            print( "getdates: Cannot get names list", sys.exc_info() )
+        finally:
+            #c.close
+            pass
+        return rr
+
+    def   getbefore(self, begdate, limit = 10):
         rr = []
         # This may be locale dependent ; should be OK as the SQL will output
         # locale dependent str as well
@@ -331,11 +364,11 @@ class dibasql():
             begdate2 = datetime.datetime.fromisoformat(begdate)
         else:
             begdate2 = begdate
-        tstamp = begdate2.timestamp()
+        tstamp = round(begdate2.timestamp()) - 0.5 # Fool time diff here
 
         try:
             self.c.execute(
-                "select udate, custid from clients where udate2 > ? order by udate limit ?",
+                "select udate, custid from clients where udate2 < ? order by udate desc limit ?",
                     (tstamp, limit))
             rr = self.c.fetchall()
         except:
@@ -408,28 +441,50 @@ if __name__ == '__main__':
 
     #print (dibadb.getcount())
     #print(dibadb.getall())
-    print(dibadb.getfirst())
-    print(dibadb.getlast())
-    #print(dibadb.getdates())
-    #print(dibadb.getnames())
-    #print(dibadb.getids())
+
     #printrec(dibadb.getall())
-    #printrec(dibadb.getsince("2020-12-06T11:36:01.003855"))
+    # Iter all
+    print("All:")
+    printrec(dibadb.getdates())
 
-    # iter all
-    first = dibadb.getfirst()
+    firstr = dibadb.getfirst()
     lastr = dibadb.getlast()
-    nextr = dibadb.getsince(first, 2)
-    print("Iter", nextr[0])
-    while True:
-        nextr2 = dibadb.getsince(nextr[1][0], 2)
-        print("Iter", nextr2[0]);
-        if nextr2[0][0] == lastr:
-            break
-        if not len(nextr2):
-            break
-        nextr = nextr2
-        #time.sleep(.2)
 
+    print("First:")
+    print(firstr)
+    print("Last:")
+    print(lastr)
+    print("")
+
+    # Ascend
+    print("Ascend:")
+    nextr = []; nextr.append(firstr)
+    while True:
+        if len(nextr) == 0:
+            print("Zero len nextr")
+            break
+        if nextr[0] == lastr:
+            print("IterL", nextr);
+            break
+        print("Iter", nextr);
+        nextr = dibadb.getafter(nextr[0][0], 1)
+        #time.sleep(.1)
+    print("")
+
+    prevr = []; prevr.append(lastr)
+    while True:
+        if len(prevr) == 0:
+            print("IterZ" )
+            break
+
+        if prevr[0] == firstr:
+            print("IterF", prevr);
+            break
+
+        print("Iter", prevr);
+
+        prevr = dibadb.getbefore(prevr[0][0], 1)
+        time.sleep(.1)
+    print("")
 
 # EOF
