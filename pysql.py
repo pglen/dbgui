@@ -277,7 +277,7 @@ class dibasql():
         finally:
             #c.close
             pass
-        return rr[0]
+        return rr
 
     def   getfirst(self):
         rr = []
@@ -285,11 +285,11 @@ class dibasql():
             self.c.execute("select udate, custid from clients order by udate2 asc limit 1")
             rr = self.c.fetchall()
         except:
-            print( "getlast: Cannot get last entry count", sys.exc_info() )
+            print( "getlast: Cannot get first entry count", sys.exc_info() )
         finally:
             #c.close
             pass
-        return rr[0]
+        return rr
 
     def   getdates(self):
         rr = []
@@ -433,6 +433,8 @@ def printrec(rec):
 
 if __name__ == '__main__':
 
+    # test the data, also an example for using this module
+
     dbfile = data_dir + "/data.sql"
     if not os.path.isfile(dbfile):
         raise ValueError("No db file", dbfile)
@@ -447,51 +449,50 @@ if __name__ == '__main__':
     printrec(dibadb.getdates())
 
     firstr = dibadb.getfirst()
+    print("First:", end=" "); print(firstr[0])
     lastr = dibadb.getlast()
+    print("Last: ", end=" ");  print(lastr[0])
 
-    #print("First:"); print(firstr)
-    #print("Last:");  print(lastr)
-    print("")
-
-    ddd = "2020-12-12T19:02:13.513573"
+    '''ddd = "2020-12-12T19:02:13.513573"
     print("After:", ddd)
     afterx = dibadb.getafter(ddd, 1)
     printrec(afterx)
-    print("")
 
     fff = "2020-12-12T19:02:19.236620"
     print("Before:", fff)
     beforex = dibadb.getbefore(fff, 1)
-    printrec(beforex)
+    printrec(beforex)'''
+
+    # Make sure you create a copy of returned data before resubmitting
 
     # Ascend
     print("Ascend:")
-    nextr = []; nextr.append(firstr)
+    nextr = []; nextr.append(firstr[0])
     while True:
         if len(nextr) == 0:
-            print("IterZ")
+            print("IterZ")      # Should not happen
             break
-        if nextr[0] == lastr:
+        if nextr[0] == lastr[0]:
             print("IterL", nextr);
             break
         print("IterN", nextr);
         nextr = dibadb.getafter(nextr[0][0], 1)[:]  # copy
         time.sleep(.1)
-    print("")
 
     # Descend
-    prevr = []; prevr.append(lastr)
+    print("Decend:")
+    prevr = []; prevr.append(lastr[0])
     while True:
         if len(prevr) == 0:
-            print("IterZ" )
+            print("IterZ" )     # Should not happen
             break
 
-        if prevr[0] == firstr:
+        if prevr[0] == firstr[0]:
             print("IterF", prevr);
             break
         print("IterP", prevr);
 
-        prevr = dibadb.getbefore(prevr[0][0], 1)[:]
+        prevr = dibadb.getbefore(prevr[0][0], 1)[:]  # copy
         time.sleep(.1)
     print("")
 

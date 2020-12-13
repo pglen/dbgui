@@ -35,30 +35,29 @@ class PeerList():
 
         try:
             self.sock.sendto(bytes(data + "\n", "utf-8"), (HOST, PORT))
-            print("Sent:     '{}'".format(data))
+            if pgdebug:
+                print("Sent:     '{}'".format(data))
         except:
             pass
 
-    def getlist(self):
+    # --------------------------------------------------------------------
+
+    def getlist(self, data):
         allcli = []
         while(True):
             try:
                 received = str(self.sock.recv(1024), "utf-8")
                 if pgdebug:
                     print("Received: '{}'".format(received))
-
                 dec = self.packer.decode_data(received)
-                #print("Dec", dec)
-                if dec[1]:
+                if dec[2] == data:
                     #print("Got dec", dec[1])
                     if dec[1] not in allcli:
                         allcli.append(dec[1])
             except:
                 #print("No more replies, socket timeout")
                 break
-
         self.sock.close()
-
         return allcli
 
 class PeerData():
@@ -71,40 +70,59 @@ class PeerData():
         self.sock.settimeout(timeout)
 
     def getdata(self, challenge, peer, port):
-        self.sock.sendto(bytes(challenge + "\n", "utf-8"), (peer, port))
 
+        enc = self.packer.encode_data("", challenge)
+        self.sock.sendto(bytes(enc + "\n", "utf-8"), (peer, port))
         received = str(self.sock.recv(1024), "utf-8")
         if pgdebug:
             print("Received: '{}'".format(received))
 
         dec = self.packer.decode_data(received)
-        print("Dec", dec)
+        if pgdebug:
+            print("Dec", dec)
         return dec
 
 # ------------------------------------------------------------------------
-# Start of program:
+# Test client actions:
 
 if __name__ == '__main__':
 
     if len(sys.argv) == 1:
         #print("Use: dbcli.py str")
         #sys.exit(0)
-        data = "hello"
+        data = "dbgui"
     else:
         data = " ".join(sys.argv[1:])
 
     pl = PeerList(data)
-    allcli = pl.getlist()
+    allcli = pl.getlist(bytes(data.upper(), "cp437"))
 
-    print("Current peer list:", allcli)
     if len(allcli) == 0:
-        print("No peers")
+        print("No peers, exiting.")
         sys.exit(0)
 
+    print("Current peer list:", allcli)
+
     dibadb = pysql.dibasql(pysql.data_dir + "/data.mysql")
-    pd = PeerData(dibadb)
+    pd = PeerData(dibadb, 1)
     ddd = pd.getdata( "count", allcli[0], 7778)
 
     #pypacker.pgdebug = 1
+    fff = pd.getdata( "first", allcli[0], 7778)
     lll = pd.getdata( "last", allcli[0], 7778)
+
+    if fff[0][0] != "OK":
+        print ("Error", fff)
+    else:
+        print("First:", fff)
+
+    if lll[0][0] != "OK":
+        print ("Error", lll)
+    else:
+        print("Last:", lll)
+
+    nnn = pd.getdata( "nocmd", allcli[0], 7778)
+    if nnn[0][0] != "OK":
+        print("Err")
+    print("nnn", nnn)
 

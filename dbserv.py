@@ -14,6 +14,7 @@ import pypacker
 packer = pypacker.packbin()
 
 myip = ""
+myid = bytes("dbgui", "cp437")
 
 pgdebug = 0
 
@@ -50,14 +51,24 @@ class BroadUDPHandler(socketserver.BaseRequestHandler):
     def handle(self):
         data = self.request[0].strip()
         socket = self.request[1]
-        if pgdebug > 1:
-            print("{} wrote: '{}'".format(self.client_address[0], data) )
-            #print(data)
         print("BroadUDPHandler Got", data);
         ddd = "{} -> {} -- {}".format(self.client_address[0], get_myip(), data.upper() )
         #pypacker.pgdebug = 2
-        ppp = packer.encode_data("", self.client_address[0], get_myip(), data.upper())
+
+        #print("got myid", myid, "data", data)
+
+        if data == myid:
+            print("got myid2", myid)
+            ppp = packer.encode_data("", self.client_address[0], get_myip(), data.upper())
+        else:
+            ppp = packer.encode_data("", self.client_address[0], get_myip(), "Not a dbgui packet")
+            #time.sleep(0.2)
+            # TODO throttle negative reply
+
         socket.sendto(bytes(ppp, "cp437"), self.client_address)
+        if pgdebug > 1:
+            print("{} wrote: '{}'".format(self.client_address[0], data) )
+            #print(data)
 
 # Deliver response from the data base
 
@@ -75,32 +86,43 @@ class RespUDPHandler(socketserver.BaseRequestHandler):
         pass
 
     def getdbname(self):
-        dbfile = pysql.data_dir + "/data.mysql"
+        dbfile = pysql.data_dir + "/data.sql"
         if not os.path.isfile(dbfile):
             raise ValueError("No db file", dbfile)
         return dbfile
 
     def handle(self):
 
-        data = self.request[0].strip()
         socket = self.request[1]
+        data = self.request[0].strip()
 
         #print("DB here", dibadb)
-        print("RespUDPHandler Got", data);
+        #print("RespUDPHandler data", data);
 
-        if data == b"hello":
-            reply = "OK", "Hello acknowledged."
-        elif data == b"count":
-            dibadb = pysql.dibasql(self.getdbname())
-            reply = "OK", "Count reply", str(dibadb.getcount())
-            del dibadb
-        elif data == b"last":
-            dibadb = pysql.dibasql(self.getdbname())
-            reply = "OK", "Last reply", str(dibadb.getlast())
-            del dibadb
-        else:
-            reply = "Hell No"
+        dec = packer.decode_data(data.decode("cp437"))
+        print("RespUDPHandler Got", dec);
 
+        try:
+            if dec[0] == "hello":
+                reply = "OK", "Hello acknowledged."
+            elif dec[0] == "count":
+                dibadb = pysql.dibasql(self.getdbname())
+                reply = "OK", "Count reply", str(dibadb.getcount())
+                del dibadb
+            elif dec[0] == "last":
+                dibadb = pysql.dibasql(self.getdbname())
+                reply = "OK", "Last reply", str(dibadb.getlast())
+                del dibadb
+            elif dec[0] == "first":
+                dibadb = pysql.dibasql(self.getdbname())
+                reply = "OK", "First reply", str(dibadb.getfirst())
+                del dibadb
+            else:
+                reply = ("ERR Hell No, command does not exist",)
+        except:
+            reply = ("ERR No DB, db has not been created yet",)
+
+        #print("reply", reply)
         ppp = packer.encode_data("", reply)
         socket.sendto(bytes(ppp, "cp437"), self.client_address)
 
