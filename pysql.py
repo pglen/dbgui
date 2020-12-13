@@ -340,8 +340,7 @@ class dibasql():
             begdate2 = datetime.datetime.fromisoformat(begdate)
         else:
             begdate2 = begdate
-
-        tstamp = round(begdate2.timestamp())
+        tstamp = begdate2.timestamp()
         try:
             self.c.execute(
                 "select udate, custid from clients where udate2 > ?"
@@ -349,7 +348,7 @@ class dibasql():
                                             (tstamp,  limit))
             rr = self.c.fetchall()
         except:
-            print( "getdates: Cannot get names list", sys.exc_info() )
+            print( "getafter: Cannot get data", sys.exc_info() )
         finally:
             #c.close
             pass
@@ -372,7 +371,7 @@ class dibasql():
                     (tstamp, limit))
             rr = self.c.fetchall()
         except:
-            print( "getdates: Cannot get names list", sys.exc_info() )
+            print( "getbefore: Cannot get data ", sys.exc_info() )
         finally:
             #c.close
             pass
@@ -456,33 +455,30 @@ if __name__ == '__main__':
 
     ddd = "2020-12-12T19:02:13.513573"
     print("After:", ddd)
-    afterx = dibadb.getafter(ddd)
+    afterx = dibadb.getafter(ddd, 1)
     printrec(afterx)
     print("")
 
     fff = "2020-12-12T19:02:19.236620"
     print("Before:", fff)
-    beforex = dibadb.getbefore(fff)
+    beforex = dibadb.getbefore(fff, 1)
     printrec(beforex)
 
-'''
     # Ascend
     print("Ascend:")
     nextr = []; nextr.append(firstr)
     while True:
         if len(nextr) == 0:
-            print("Zero len nextr")
+            print("IterZ")
             break
         if nextr[0] == lastr:
             print("IterL", nextr);
             break
         print("IterN", nextr);
-        nextr = dibadb.getafter(nextr[0][0], 1)
+        nextr = dibadb.getafter(nextr[0][0], 1)[:]  # copy
         time.sleep(.1)
     print("")
-'''
 
-'''
     # Descend
     prevr = []; prevr.append(lastr)
     while True:
@@ -493,12 +489,10 @@ if __name__ == '__main__':
         if prevr[0] == firstr:
             print("IterF", prevr);
             break
-
         print("IterP", prevr);
 
-        prevr = dibadb.getbefore(prevr[0][0], 1)
+        prevr = dibadb.getbefore(prevr[0][0], 1)[:]
         time.sleep(.1)
     print("")
-'''
 
 # EOF
