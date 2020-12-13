@@ -469,7 +469,7 @@ if __name__ == '__main__':
         print( "Cannot write to data dir:", pysql.data_dir)
         sys.exit(4)
 
-    dbname = pysql.data_dir + "/data.mysql"
+    dbname = pysql.data_dir + "/data.sql"
     dibadb = pysql.dibasql(dbname)
     print("Using file:", dbname)
 

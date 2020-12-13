@@ -78,7 +78,7 @@ class dibasql():
                 sqlstr += ", " + aa + " text"
 
             for aa in fields2:
-                sqlstr += ", " + aa + " float"
+                sqlstr += ", " + aa + " real"
 
             sqlstr +=  ")"
 
@@ -340,8 +340,8 @@ class dibasql():
             begdate2 = datetime.datetime.fromisoformat(begdate)
         else:
             begdate2 = begdate
-        tstamp = round(begdate2.timestamp()) + 0.1   # This is a hack ... needed for next record
 
+        tstamp = round(begdate2.timestamp())
         try:
             self.c.execute(
                 "select udate, custid from clients where udate2 > ?"
@@ -434,7 +434,7 @@ def printrec(rec):
 
 if __name__ == '__main__':
 
-    dbfile = data_dir + "/data.mysql"
+    dbfile = data_dir + "/data.sql"
     if not os.path.isfile(dbfile):
         raise ValueError("No db file", dbfile)
     dibadb = dibasql(dbfile)
@@ -450,12 +450,22 @@ if __name__ == '__main__':
     firstr = dibadb.getfirst()
     lastr = dibadb.getlast()
 
-    print("First:")
-    print(firstr)
-    print("Last:")
-    print(lastr)
+    #print("First:"); print(firstr)
+    #print("Last:");  print(lastr)
     print("")
 
+    ddd = "2020-12-12T19:02:13.513573"
+    print("After:", ddd)
+    afterx = dibadb.getafter(ddd)
+    printrec(afterx)
+    print("")
+
+    fff = "2020-12-12T19:02:19.236620"
+    print("Before:", fff)
+    beforex = dibadb.getbefore(fff)
+    printrec(beforex)
+
+'''
     # Ascend
     print("Ascend:")
     nextr = []; nextr.append(firstr)
@@ -466,11 +476,14 @@ if __name__ == '__main__':
         if nextr[0] == lastr:
             print("IterL", nextr);
             break
-        print("Iter", nextr);
+        print("IterN", nextr);
         nextr = dibadb.getafter(nextr[0][0], 1)
-        #time.sleep(.1)
+        time.sleep(.1)
     print("")
+'''
 
+'''
+    # Descend
     prevr = []; prevr.append(lastr)
     while True:
         if len(prevr) == 0:
@@ -481,10 +494,11 @@ if __name__ == '__main__':
             print("IterF", prevr);
             break
 
-        print("Iter", prevr);
+        print("IterP", prevr);
 
         prevr = dibadb.getbefore(prevr[0][0], 1)
         time.sleep(.1)
     print("")
+'''
 
 # EOF
