@@ -126,6 +126,15 @@ class RespUDPHandler(socketserver.BaseRequestHandler):
                     dec2.append(1);
                 reply = ["OK", "Next reply", dibadb.getafter(str(dec2[1]), int(dec2[2]))]
                 del dibadb
+            elif dec[0][0] == "prev":
+                dibadb = pysql.dibasql(self.getdbname())
+                dec2 = list(dec[0])
+                if len (dec2) < 2:
+                    dec2.append("");
+                if len (dec2) < 3:
+                    dec2.append(1);
+                reply = ["OK", "Prev reply", dibadb.getbefore(str(dec2[1]), int(dec2[2]))]
+                del dibadb
             else:
                 reply = ("ERR Hell No", "command does not exist" )
         except:

@@ -128,3 +128,8 @@ if __name__ == '__main__':
         print("Err")
     print("nnn", nnn)
 
+    zzz = lll[0][2][0][0]
+    aaa = pd.getdata( ("prev", zzz), allcli[0], 7778)
+    if aaa[0][0] != "OK":
+        print("Err")
+    print("aaa", aaa)
