@@ -103,24 +103,33 @@ class RespUDPHandler(socketserver.BaseRequestHandler):
         print("RespUDPHandler Got", dec);
 
         try:
-            if dec[0] == "hello":
+            if dec[0][0] == "hello":
                 reply = "OK", "Hello acknowledged."
-            elif dec[0] == "count":
+            elif dec[0][0] == "count":
                 dibadb = pysql.dibasql(self.getdbname())
                 reply = "OK", "Count reply", str(dibadb.getcount())
                 del dibadb
-            elif dec[0] == "last":
+            elif dec[0][0] == "last":
                 dibadb = pysql.dibasql(self.getdbname())
-                reply = "OK", "Last reply", str(dibadb.getlast())
+                reply = ["OK", "Last reply", dibadb.getlast(),]
                 del dibadb
-            elif dec[0] == "first":
+            elif dec[0][0] == "first":
                 dibadb = pysql.dibasql(self.getdbname())
-                reply = "OK", "First reply", str(dibadb.getfirst())
+                reply = ["OK", "First reply", dibadb.getfirst(),]
+                del dibadb
+            elif dec[0][0] == "next":
+                dibadb = pysql.dibasql(self.getdbname())
+                dec2 = list(dec[0])
+                if len (dec2) < 2:
+                    dec2.append("");
+                if len (dec2) < 3:
+                    dec2.append(1);
+                reply = ["OK", "Next reply", dibadb.getafter(str(dec2[1]), int(dec2[2]))]
                 del dibadb
             else:
-                reply = ("ERR Hell No, command does not exist",)
+                reply = ("ERR Hell No", "command does not exist" )
         except:
-            reply = ("ERR No DB, db has not been created yet",)
+            reply = ("ERR No DB", str(sys.exc_info()))
 
         #print("reply", reply)
         ppp = packer.encode_data("", reply)

@@ -105,11 +105,11 @@ if __name__ == '__main__':
 
     dibadb = pysql.dibasql(pysql.data_dir + "/data.mysql")
     pd = PeerData(dibadb, 1)
-    ddd = pd.getdata( "count", allcli[0], 7778)
+    ddd = pd.getdata( ("count",), allcli[0], 7778)
 
     #pypacker.pgdebug = 1
-    fff = pd.getdata( "first", allcli[0], 7778)
-    lll = pd.getdata( "last", allcli[0], 7778)
+    fff = pd.getdata( ("first",), allcli[0], 7778)
+    lll = pd.getdata( ("last",), allcli[0], 7778)
 
     if fff[0][0] != "OK":
         print ("Error", fff)
@@ -121,7 +121,9 @@ if __name__ == '__main__':
     else:
         print("Last:", lll)
 
-    nnn = pd.getdata( "nocmd", allcli[0], 7778)
+    ddd = fff[0][2][0][0]
+    print("ddd", ddd)
+    nnn = pd.getdata( ("next", ddd), allcli[0], 7778)
     if nnn[0][0] != "OK":
         print("Err")
     print("nnn", nnn)
