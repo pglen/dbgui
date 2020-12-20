@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -63,8 +63,9 @@ class MainWin():
         window.connect("button-press-event", self.area_button)
 
         try:
-            window.set_hands_from_file("images/hands.png")
+            window.set_hands_from_file("images" + os.sep + "hands.png")
         except:
+            print("set image", sys.exc_info())
             pass
 
         GLib.timeout_add(1000, self.handler_tick)
@@ -176,19 +177,19 @@ class MainWin():
         hbox = Gtk.HBox();
         lab3 = Gtk.Label(label="");  hbox.pack_start(lab3, True, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/person.png", " Ne_w Client ", self.new_account, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "person.png", " Ne_w Client ", self.new_account, self.window)
         hbox.pack_start(ib2, False, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/select.png", " Selec_t Client ", self.sel_account, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "select.png", " Selec_t Client ", self.sel_account, self.window)
         hbox.pack_start(ib2, False, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/person3.png", " _Edit Client ", self.ed_account, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "person3.png", " _Edit Client ", self.ed_account, self.window)
         hbox.pack_start(ib2, False, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/search.png", " _Search ", self.search, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "search.png", " _Search ", self.search, self.window)
         hbox.pack_start(ib2, False, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/transact.png", " Show T_ransactions ", self.transact, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "transact.png", " Show T_ransactions ", self.transact, self.window)
         hbox.pack_start(ib2, False, 0, 0)
 
         lab2e = Gtk.Label(label="");  hbox.pack_start(lab2e, True, 0, 0)
@@ -201,22 +202,22 @@ class MainWin():
         hbox3 = Gtk.HBox()
         lab3 = Gtk.Label(label="");  hbox3.pack_start(lab3, True, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/person2.png", "  _Delete Client  ", self.del_client, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "person2.png", "  _Delete Client  ", self.del_client, self.window)
         hbox3.pack_start(ib2, False, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/hands.png", "  H_ide One  ", self.hide_one, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "hands.png", "  H_ide One  ", self.hide_one, self.window)
         hbox3.pack_start(ib2, False, 0, 0)
 
-        #ib2 = pgentry.imgbutt("images/hands.png", "  _Delete One   ", self.del_one, self.window)
+        #ib2 = pgentry.imgbutt("images" + os.sep + "hands.png", "  _Delete One   ", self.del_one, self.window)
         #hbox3.pack_start(ib2, False, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/hands.png", "  Hide _Main  ", self.hide_main, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "hands.png", "  Hide _Main  ", self.hide_main, self.window)
         hbox3.pack_start(ib2, False, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/summary.png", " Show Summ_ary ", self.show_one, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "summary.png", " Show Summ_ary ", self.show_one, self.window)
         hbox3.pack_start(ib2, False, 0, 0)
 
-        ib2 = pgentry.imgbutt("images/hands.png", "   E_xit  ", self.exit_all, self.window)
+        ib2 = pgentry.imgbutt("images" + os.sep + "hands.png", "   E_xit  ", self.exit_all, self.window)
         hbox3.pack_start(ib2, False, 0, 0)
 
         return hbox3
@@ -287,6 +288,7 @@ class MainWin():
         try:
             os.unlink(fname)
         except:
+            print("Cannot unlink file:", fname)
             pass
 
     # Evaluate callback, return string with error. Empty string for OK.
@@ -332,8 +334,8 @@ class MainWin():
 
     def new_account(self, area, me):
         #print( "new_account" )
-        serial = uuid.uuid4()
-        custform = newcust.NewCust(self, serial)
+        newserial = uuid.uuid4()
+        custform = newcust.NewCust(self, newserial)
         custform.run()
         if custform.ok == False:
             self.progress("Cancelled account generation. ")
@@ -361,6 +363,7 @@ class MainWin():
         if ret == Gtk.ResponseType.YES:
             self.progress("Deleting ...")
             dibadb.rm(self.serial)
+            self.serial = ""
             self.progress("Deleted.")
         else:
             self.progress("Delete cancelled")
@@ -469,7 +472,7 @@ if __name__ == '__main__':
         print( "Cannot write to data dir:", pysql.data_dir)
         sys.exit(4)
 
-    dbname = pysql.data_dir + "/data.sql"
+    dbname = os.path.join(pysql.data_dir, "data.sql")
     dibadb = pysql.dibasql(dbname)
     print("Using file:", dbname)
 

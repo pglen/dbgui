@@ -86,7 +86,8 @@ class RespUDPHandler(socketserver.BaseRequestHandler):
         pass
 
     def getdbname(self):
-        dbfile = pysql.data_dir + "/data.sql"
+        dbfile = os.path.join(pysql.data_dir, "data.sql")
+
         if not os.path.isfile(dbfile):
             raise ValueError("No db file", dbfile)
         return dbfile
@@ -116,6 +117,15 @@ class RespUDPHandler(socketserver.BaseRequestHandler):
             elif dec[0][0] == "first":
                 dibadb = pysql.dibasql(self.getdbname())
                 reply = ["OK", "First reply", dibadb.getfirst(),]
+                del dibadb
+            elif dec[0][0] == "rget":
+                dibadb = pysql.dibasql(self.getdbname())
+                dec2 = list(dec[0])
+                if len (dec2) < 2:
+                    dec2.append("");
+                if len (dec2) < 3:
+                    dec2.append(1);
+                reply = ["OK", "Rget reply", dibadb.get(str(dec2[1]), int(dec2[2]))]
                 del dibadb
             elif dec[0][0] == "next":
                 dibadb = pysql.dibasql(self.getdbname())

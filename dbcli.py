@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     print("Current peer list:", allcli)
 
-    dibadb = pysql.dibasql(pysql.data_dir + "/data.mysql")
+    dibadb = pysql.dibasql(os.path.join(pysql.data_dir, "data.mysql")
     pd = PeerData(dibadb, 1)
     ddd = pd.getdata( ("count",), allcli[0], 7778)
 

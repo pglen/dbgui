@@ -18,14 +18,8 @@ dataroot = os.getcwd()
 
 #print( "datatroot", dataroot)
 
-data_dir        = os.path.realpath(dataroot + "/data/customers/")
-audit_dir       = os.path.realpath(dataroot + "/data/audit/")
-
-#blockchain_dir  = dataroot + "/data/blockchain/"
-#key_dir         = dataroot + "/data/customers/keys/"
-#currency_dir    = dataroot + "/data/currency/"
-
-# Store data for the DIBA bank
+data_dir        = os.path.realpath(os.path.join(dataroot, "data", "customers"))
+audit_dir       = os.path.realpath(os.path.join(dataroot, "data", "audit"))
 
 # Fields in no particular order
 
@@ -162,7 +156,7 @@ class dibasql():
                 #print( "inserting", entryid)
                 sqlstr = "insert into clients (entryid, "
                 for aa in datax:
-                     sqlstr += aa + ", "
+                     sqlstr += str(aa) + ", "
                 # Erase last one
                 sqlstr = sqlstr[:-2]
                 sqlstr += ") values (?, "   # first value for rowid
@@ -176,22 +170,24 @@ class dibasql():
                      strx = datax[aa]
                      arr.append(strx)
 
-                print( "sql str", sqlstr, "arr", arr)
+                #print( "sql str", sqlstr, "arr", arr)
                 self.c.execute(sqlstr, arr)
             else:
                 #print( "updating")
                 sqlstr = "update clients set "
                 for aa in datax:
-                     sqlstr += aa + " = '" + datax[aa] + "', "
+                     sqlstr += str(aa) + " = '" + str(datax[aa]) + "', "
+
                 sqlstr = sqlstr[:-2]
+
                 sqlstr += " where custid = '" + datax['custid'] + "'"
-                print( "sql str:", sqlstr)
+                #print( "sql str:", sqlstr)
                 self.c.execute(sqlstr)
 
             self.conn.commit()
         except:
-            print( "Cannot put sql data", sys.exc_info()             )
-            print( "sqlstr", sqlstr)
+            print( "Cannot put sql data", sys.exc_info() )
+            print( "erring sqlstr '{}'".format(sqlstr))
             ret = False
         finally:
             #c.close
@@ -204,7 +200,7 @@ class dibasql():
     # --------------------------------------------------------------------
     # Get table names
 
-    def   getnames(self):
+    def   get_tabnames(self):
 
         ss = "SELECT sql FROM sqlite_master WHERE type='table'"
         try:
@@ -242,10 +238,22 @@ class dibasql():
     # --------------------------------------------------------------------
     # Get All
 
-    def   getall(self):
+    def   getall(self, limx = 100):
+        rr = []
+        try:
+            self.c.execute("select * from clients limit ?", (limx,))
+            rr = self.c.fetchall()
+        except:
+            print( "getall: Cannot get sql data", sys.exc_info() )
+        finally:
+            pass
+
+        return rr
+
+    def   rget(self, custxid):
         rr = []; ss = []
         try:
-            self.c.execute("select * from clients limit 100")
+            self.c.execute("select * from clients where custid == ? limit 100", (custxid,) )
             rr = self.c.fetchall()
             #ss = self.c.description
         except:
@@ -435,7 +443,8 @@ if __name__ == '__main__':
 
     # test the data, also an example for using this module
 
-    dbfile = data_dir + "/data.sql"
+    dbfile = os.path.join(data_dir, "data.sql")
+
     if not os.path.isfile(dbfile):
         raise ValueError("No db file", dbfile)
     dibadb = dibasql(dbfile)
@@ -443,7 +452,8 @@ if __name__ == '__main__':
     #print (dibadb.getcount())
     #print(dibadb.getall())
 
-    #printrec(dibadb.getall())
+    print("All data:")
+    printrec(dibadb.getall())
     # Iter all
     print("All:")
     printrec(dibadb.getdates())
@@ -465,6 +475,7 @@ if __name__ == '__main__':
 
     # Make sure you create a copy of returned data before resubmitting
 
+    '''
     # Ascend
     print("Ascend:")
     nextr = []; nextr.append(firstr[0])
@@ -495,5 +506,10 @@ if __name__ == '__main__':
         prevr = dibadb.getbefore(prevr[0][0], 1)[:]  # copy
         time.sleep(.1)
     print("")
+    '''
+    print("Data getter:")
+    rgetr = dibadb.rget(firstr[0][1])
+    printrec(rgetr)
+
 
 # EOF

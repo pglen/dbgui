@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os, sys, getopt, signal, time, datetime
+import random, treehand, padding
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -9,13 +10,9 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 
-import random, time
-import treehand, padding
-
 sys.path.append('../pycommon')
 
-import  sutil
-import  pgentry
+import  sutil, pgentry
 
 class NewCust(Gtk.Window):
 
@@ -77,7 +74,7 @@ class NewCust(Gtk.Window):
         self.arr.append(("udate", ddd))
 
         # We use gobj instead of SIGALRM, so it is more multi platform
-        #GObject.timeout_add(1000, self.handler_tick)
+        GObject.timeout_add(1000, self.handler_tick)
 
         vbox = Gtk.VBox()
         vbox2 = Gtk.VBox(False, 4);
@@ -105,7 +102,7 @@ class NewCust(Gtk.Window):
         sg.add_widget(lab7);     sg.add_widget(lab8)
 
         tp7 = ("_Zip: ", "zip", "Zip code or Postal code", datax)
-        tp8 = ("C_ountry: ", "country", "Coutry of residence", datax)
+        tp8 = ("Co_untry: ", "country", "Coutry of residence", datax)
         lab9, lab10 = pgentry.entryquad(self.arr, vbox2, tp7, tp8)
         sg.add_widget(lab9);     sg.add_widget(lab10)
 
@@ -124,21 +121,25 @@ class NewCust(Gtk.Window):
 
         vbox3 = Gtk.VBox();
 
+        sg2 = Gtk.SizeGroup(Gtk.SizeGroupMode.HORIZONTAL)
+
         lab1a = pgentry.textviewpair(self.arr, vbox3, "_Comments: ", "comments", \
                 "Enter comments. This field can contain additional data. "
                 "   (Ctrl-TAB to advance)", datax)
-        sg.add_widget(lab1a)
+        sg2.add_widget(lab1a)
 
         lab5 = pgentry.textviewpair(self.arr, vbox3, "_Free Text: ", "freetext", \
                 "Enter _free flowing text, relevant to the entry.", datax)
-        sg.add_widget(lab5)
+        sg2.add_widget(lab5)
 
         lab2a = pgentry.textviewpair(self.arr, vbox3, "Lo_g entry:", "log", \
                 "Enter log entry. (Append at end, keep old entries.)", datax)
-        sg.add_widget(lab2a)
+        sg2.add_widget(lab2a)
 
-        vbox.pack_start(vbox3, False, 0, 0)
-        self.vspacer(vbox, expand = True)
+        #vbox.pack_start(vbox3, False, 0, 0)
+        vbox.pack_start(vbox3, 1, 1, 0)
+        #self.vspacer(vbox, expand = True)
+        self.vspacer(vbox, expand = False)
 
         self.arr.append(("cdate2", nownow.timestamp()))
         self.arr.append(("udate2", nownow.timestamp()))
@@ -273,13 +274,10 @@ class NewCust(Gtk.Window):
         return lab1, lab2
 
     def textviewpair(self, vbox, labtext, labname, tip, defval = None):
-
         hbox2 = Gtk.HBox();
         self.spacer(hbox2)
-
         lab2a = Gtk.Label(label="     ")
         hbox2.pack_start(lab2a, False , 0, 0)
-
         lab2 = Gtk.Label(label=labtext); lab2.set_alignment(1, 0)
         lab2.set_tooltip_text(tip)
         hbox2.pack_start(lab2, False , 0, 0)
@@ -287,7 +285,6 @@ class NewCust(Gtk.Window):
             sw = self.scrolledtext(labname, defval[labname])
         else:
             sw = self.scrolledtext(labname, defval)
-
         self.spacer(hbox2)
         hbox2.pack_start(sw, True, True, 0)
         self.spacer(hbox2)
@@ -300,6 +297,7 @@ class NewCust(Gtk.Window):
 
     def handler_tick(self):
         GObject.timeout_add(1000, self.handler_tick)
+        #print("tick")
 
     '''wid = padding.Padding()
     wid.set_size_request(lenx, 30)
