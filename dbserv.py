@@ -217,12 +217,17 @@ class  netpeer():
     def block(self):
         self.th.join()
 
+def signal_handler(sig, frame):
+    print('You pressed Ctrl+C!')
+    sys.exit(0)
+
 # ------------------------------------------------------------------------
 # Start of program:
 
 if __name__ == '__main__':
 
     #print("Py db net server");
+    signal.signal(signal.SIGINT, signal_handler)
 
     hname = socket.gethostname()
     print("Server started; hostname: '{}'".format(hname) )
