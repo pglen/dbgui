@@ -63,7 +63,7 @@ class MainWin():
         window.connect("button-press-event", self.area_button)
 
         try:
-            window.set_hands_from_file("images" + os.sep + "hands.png")
+            window.set_icon_from_file("images" + os.sep + "hands.png")
         except:
             print("set image", sys.exc_info())
             pass
