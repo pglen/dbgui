@@ -511,5 +511,4 @@ if __name__ == '__main__':
     rgetr = dibadb.rget(firstr[0][1])
     printrec(rgetr)
 
-
 # EOF
