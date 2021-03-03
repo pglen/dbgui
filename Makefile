@@ -27,6 +27,7 @@ git:
 	git add .
 	git commit -m autocheck
 	git push
+	git push local
 
 # End of Makefile
 
